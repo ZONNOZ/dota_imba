@@ -125,7 +125,7 @@ if (localTeam != 2 && localTeam != 3 || Game.GetPlayerInfo(Game.GetLocalPlayerID
 
 if (currentMap == "imba_1v1") {
 	Setup1v1();
-} else if (currentMap == 'imba_ranked_10v10' || currentMap == 'imba_frantic_10v10') {
+} else if (currentMap == 'imba_ranked_10v10' || currentMap == 'imba_frantic_10v10' || currentMap == 'imba_mutation_10v10') {
 	SetupTopBar();
 }
 
@@ -194,23 +194,23 @@ function onPlayerStatChange(table, key, data) {
 					break;
 			}
 
-			var image_name = heroName
-
-			if (ply_battlepass) {
-				var short_name = heroName.replace('npc_dota_hero_', "");
-				if (ply_battlepass.arcana[short_name]) {
-					image_name = heroName + ply_battlepass.arcana[short_name]
-					$.Msg(image_name)
-				}
-			}
-
 			var newhero = $.CreatePanel('RadioButton', currentstat, heroName);
 			newhero.group = 'HeroChoises';
 			newhero.SetPanelEvent('onactivate', function () { PreviewHero(heroName); });
 
 			var newheroimage = $.CreatePanel('DOTAHeroImage', newhero, '');
 			newheroimage.hittest = false;
-			newheroimage.heroname = image_name;
+			newheroimage.heroname = heroName;
+
+			var image_name = heroName
+
+			if (ply_battlepass) {
+				if (ply_battlepass.arcana[heroName]) {
+					image_name = heroName.replace("npc_dota_hero_", "");
+					$.Msg(image_name)
+					OverrideHeroImage(ply_battlepass.arcana[heroName] + 1, newheroimage, image_name)
+				}
+			}
 
 			switch (data.herolist[heroName]) {
 				case 1:
@@ -252,6 +252,7 @@ function onPlayerStatChange(table, key, data) {
 			panelscreated = length;
 			teamdire.RemoveAndDeleteChildren();
 			teamradiant.RemoveAndDeleteChildren();
+
 			Object.keys(data).forEach(function (nkey) {
 				var currentteam = null;
 				switch (data[nkey].team) {
@@ -272,9 +273,10 @@ function onPlayerStatChange(table, key, data) {
 				var newinfo = $.CreatePanel('Label', newelement, '');
 				newinfo.AddClass('PlayerInfo');
 
-				if (data[nkey].id) {
+				var player_color = "#DDDDDD";
+				if (typeof data[nkey].id != 'undefined') {
+					player_color = GameUI.CustomUIConfig().player_colors[(data[nkey].id)];
 					var player_table = CustomNetTables.GetTableValue("player_table", data[nkey].id.toString());
-
 					if (player_table) {
 						if (currentMap == "imba_ranked_5v5") {
 							if (player_table.IMR_5v5) {
@@ -282,11 +284,10 @@ function onPlayerStatChange(table, key, data) {
 							}
 						} else if (currentMap == "imba_ranked_10v10") {
 							if (player_table.IMR_5v5) {
-								newinfo.text = player_table.IMR_10v10.toFixed(0)
+								newinfo.text = "IMR: " + player_table.IMR_10v10.toFixed(0)
 							}
 						} else {
-							newinfo.text = player_table.Lvl.toFixed(0)
-							newinfo.color = player_table.title_color
+							newinfo.text = "Lvl: " + player_table.Lvl.toFixed(0)
 						}
 					}
 				}
@@ -294,6 +295,16 @@ function onPlayerStatChange(table, key, data) {
 				var newlabel = $.CreatePanel('DOTAUserName', newelement, '');
 				newlabel.AddClass('PlayerLabel');
 				newlabel.steamid = data[nkey].steamid;
+
+				var newcolorbar = $.CreatePanel('Panel', newelement, 'PlayerColorBar' + data[nkey].id);
+				newcolorbar.AddClass('PlayerColorBar');
+				newcolorbar.style.backgroundColor = player_color;
+
+				var newcolorbaroverlay = $.CreatePanel('Panel', newcolorbar, '');
+				newcolorbaroverlay.AddClass('PlayerColorBarOverlay');
+
+				var newoverlay = $.CreatePanel('Panel', newelement, '');
+				newoverlay.AddClass('PlayerOverlay');
 
 				DisableHero(data[nkey].selectedhero);
 
@@ -460,12 +471,19 @@ function onPlayerStatChange(table, key, data) {
 		} else if (data['time'] > -1) {
 			FindDotaHudElement('TimeLeft').text = data['time'];
 			FindDotaHudElement('GameMode').text = $.Localize(data['mode']);
+//			if (data['time'] == 10 || data['time'] == 30) {
+			if (data['time'] == 10) {
+				Game.EmitSound("announcer_ann_custom_countdown_" + data['time']);
+			} else if (data['time'] < 10 && data['time'] > 0) {
+				Game.EmitSound("announcer_ann_custom_countdown_0" + data['time']);
+			}
 		} else {
 			// CM Hides the chat on last pick, before selecting plyer hero
 			// ARDM don't have pick screen chat
 //			if (currentMap === 'imba_ranked_5v5' || currentMap === 'imba_ranked_10v10') {
 				ReturnChatWindow();
 //			}
+
 			HideStrategy();
 		}
 	}
@@ -962,3 +980,10 @@ function SetupTalentTooltips(talents) {
 		}
 	}
 }
+
+function TopBarColor(args) {
+	$.Msg('event_called');
+	$.GetContextPanel().FindChildTraverse('PlayerColorBar' + args.id).style.backgroundColor = "#FFF";
+}
+
+GameEvents.Subscribe("top_bar_colors", TopBarColor);

@@ -33,8 +33,8 @@
 
 	//Combat Events
 	"custom_toast_PlayerDenied"								"{killer_name} {denied_icon} Denied {victim_name}"
-	"custom_toast_CourierKilled"							"{courier_icon} {team_name} courier is dead"
-	"custom_toast_CourierRespawned"							"{courier_icon} {team_name} courier has respawned"
+	"custom_toast_CourierKilled"							"{courier_icon} {victim_name} courier is dead"
+	"custom_toast_CourierRespawned"							"{courier_icon} {victim_name} courier has respawned"
 	"custom_toast_GlyphUsed"								"{glyph_icon} {team_name} structures fortified"
 	"custom_toast_TeamKilled"								"{team_name} {killed_icon} {victim_name}"
 	"custom_toast_KillStreak"								"{player_name} is {kill_streak}"
@@ -148,11 +148,7 @@
 	"vanilla_hero"					"Lazy"
 	"close_picking_screen"			"Force-close Picking Screen"
 
-	"ChatTeam"										"[Team]"
-	"ChatPlaceholder"								"Type here to chat.."
-	"ChatLine"										"<b><font color='{s:color}'>{s:name}</font></b>: {s:message}"
-	"ChatLinePass"									"<b><font color='{s:color}'>{s:name}</font></b>: <font color='gold'>{s:message}</font>"
-	"ChatRandomed"									"<b><font color='{s:color}'>{s:name}</font></b> has randomed <font color='gold'>{s:hero}</font>"
+	"gg_panel_description"			"GG confirmed in"
 
 	"imba_hero_name_filler"                         "Lock in "
 	"imba_strength_hero_pick_list_title"            "Strength Heroes"
@@ -206,52 +202,65 @@
 	"battlepass_level"				"Level: "
 	"battlepass_refresh"			"Refresh"
 
-	"battlepass_blink"				"Light Blue Blink"
-	"battlepass_blink2"				"Nature Blink"
-	"battlepass_blink3"				"Water Blink"
-	"battlepass_blink4"				"Water Blink 2"
-	"battlepass_blink5"				"Snow Blink"
-	"battlepass_blink6"				"Purple Blink"
-	"battlepass_blink7"				"Red Blink"
-	"battlepass_blink8"				"Red Blink 2"
-	"battlepass_blink9"				"Gold Blink"
-	"battlepass_blink10"			"Gold Blink 2"
-	"battlepass_force_staff"		"Nature Force Staff"
-	"battlepass_force_staff2"		"Water Force Staff"
-	"battlepass_force_staff3"		"Snow Force Staff"
-	"battlepass_force_staff4"		"Red Force Staff"
-	"battlepass_radiance"			"Water Radiance"
-	"battlepass_radiance2"			"Red Radiance"
-	"battlepass_sheepstick"			"Blue Pig Sheepstick"
-	"battlepass_sheepstick2"		"Bird Sheepstick"
-	"battlepass_shiva"				"Water Shiva"
-	"battlepass_shiva2"				"Fire Shiva"
-	"battlepass_mekansm"			"Water Mekansm"
-	"battlepass_mekansm2"			"Red Mekansm"
-	"battlepass_fountain"			"Nature Fountain"
-	"battlepass_fountain2"			"Nature Fountain 2"
-	"battlepass_fountain3"			"Nature Fountain 3"
-	"battlepass_fountain4"			"Water Fountain"
-	"battlepass_fountain5"			"Water Fountain 2"
-	"battlepass_fountain6"			"Water Fountain 3"
-	"battlepass_fountain7"			"Snow Fountain"
-	"battlepass_fountain8"			"Snow Fountain 2"
-	"battlepass_fountain9"			"Snow Fountain 3"
-	"battlepass_fountain10"			"Gold Fountain"
-	"battlepass_fountain11"			"Gold Fountain 2"
-	"battlepass_fountain12"			"Red Fountain"
-	"battlepass_fountain13"			"Red Fountain 2"
-	"battlepass_fountain14"			"Red Fountain 3"
-	"battlepass_fountain15"			"Purple Fountain"
-	"battlepass_bottle"				"Water Bottle"
-	"battlepass_bottle2"			"Purple Bottle"
-	"battlepass_bottle3"			"Red Bottle"
-	"battlepass_bottle4"			"Gold Bottle"
-	"battlepass_pudge_arcana"		"Pudge Arcana (red)"
-	"battlepass_pudge_arcana2"		"Pudge Arcana (green)"
+	"battlepass_blink"						"Light Blue Blink"
+	"battlepass_blink2"						"Nature Blink"
+	"battlepass_blink3"						"Water Blink"
+	"battlepass_blink4"						"Water Blink 2"
+	"battlepass_blink5"						"Snow Blink"
+	"battlepass_blink6"						"Purple Blink"
+	"battlepass_blink7"						"Red Blink"
+	"battlepass_blink8"						"Red Blink 2"
+	"battlepass_blink9"						"Gold Blink"
+	"battlepass_blink10"					"Gold Blink 2"
+	"battlepass_blink11"					"Emerald Blink"
+	"battlepass_blink12"					"Emerald Blink 2"
+	"battlepass_force_staff"				"Nature Force Staff"
+	"battlepass_force_staff2"				"Water Force Staff"
+	"battlepass_force_staff3"				"Snow Force Staff"
+	"battlepass_force_staff4"				"Red Force Staff"
+	"battlepass_force_staff5"				"Emerald Force Staff"
+	"battlepass_radiance"					"Water Radiance"
+	"battlepass_radiance2"					"Red Radiance"
+	"battlepass_radiance3"					"Emerald Radiance"
+	"battlepass_sheepstick"					"Blue Pig Sheepstick"
+	"battlepass_sheepstick2"				"Bird Sheepstick"
+	"battlepass_shiva"						"Water Shiva"
+	"battlepass_shiva2"						"Fire Shiva"
+	"battlepass_shiva3"						"Emerald Shiva"
+	"battlepass_mekansm"					"Water Mekansm"
+	"battlepass_mekansm2"					"Red Mekansm"
+	"battlepass_mekansm3"					"Emerald Mekansm"
+	"battlepass_fountain"					"Nature Fountain"
+	"battlepass_fountain2"					"Nature Fountain 2"
+	"battlepass_fountain3"					"Nature Fountain 3"
+	"battlepass_fountain4"					"Water Fountain"
+	"battlepass_fountain5"					"Water Fountain 2"
+	"battlepass_fountain6"					"Water Fountain 3"
+	"battlepass_fountain7"					"Snow Fountain"
+	"battlepass_fountain8"					"Snow Fountain 2"
+	"battlepass_fountain9"					"Snow Fountain 3"
+	"battlepass_fountain10"					"Purple Fountain"
+	"battlepass_fountain11"					"Red Fountain"
+	"battlepass_fountain12"					"Red Fountain 2"
+	"battlepass_fountain13"					"Red Fountain 3"
+	"battlepass_fountain14"					"Gold Fountain"
+	"battlepass_fountain15"					"Gold Fountain 2"
+	"battlepass_fountain16"					"Emerald Fountain"
+	"battlepass_fountain17"					"Emerald Fountain 2"
+	"battlepass_fountain18"					"Emerald Fountain 3"
+	"battlepass_bottle"						"Water Bottle"
+	"battlepass_bottle2"					"Purple Bottle"
+	"battlepass_bottle3"					"Red Bottle"
+	"battlepass_bottle4"					"Gold Bottle"
+	"battlepass_bottle5"					"Emerald Bottle"
+	"battlepass_vengefulspirit_immortal"	"Vengeful Spirit Immortal"
+	"battlepass_pudge_arcana"				"Pudge Arcana (red)"
+	"battlepass_pudge_arcana2"				"Pudge Arcana (green)"
+	"battlepass_juggernaut_arcana"			"Juggernaut Arcana (blue)"
+	"battlepass_juggernaut_arcana2"			"Juggernaut Arcana (red)"
 
 	// Overthrow
-		"PointsToWin"									"+{d:points_to_win} more"
+	"PointsToWin"									"+{d:points_to_win} more"
 	"PointsToWin_CloseToVictory"					"+{d:points_to_win} more"
 	"PointsToWin_VeryCloseToVictory"				"+{d:points_to_win} more!"
 	"PointsToWin_Victory"							"Victory!"
@@ -318,4 +327,108 @@
 	"gg_panel"					"GG Panel"
 	"gg_count"					"GG player count: "
 	"gg_call"					"GG player count: "
+
+	// Mutation
+	//Positive
+	"mutation_killstreak_power"						"Killstreak Power"
+	"mutation_killstreak_power_Description"			"Each kill increases damage done and taken by 20%%. Resets on death."
+
+	"mutation_teammate_resurrection"				"Teammate Resurrection"
+	"mutation_teammate_resurrection_Description"	"Players can resurrect teammates by clicking on their tombstone and channeling."
+
+	"mutation_jump_start"							"Jump Start"
+	"mutation_jump_start_Description"				"Heroes start at level 6."
+
+	"mutation_slark_mode"							"Shadow Dance"
+	"mutation_slark_mode_Description"				"Regenerate health and mana slightly faster when not in vision of the enemy."
+
+	"mutation_greedisgood"							"Greed Is Good"
+	"mutation_greedisgood_Description"				"{gold} gold for everyone each {minutes} minutes."
+
+	"mutation_angel_arena"							"Angel Arena"
+	"mutation_angel_arena_Description"				"Every 5 minutes, duels will occur. Winner team gets 2000 extra gold."
+	"mutation_slark_mode_author"					"76561198015161808"
+
+	"mutation_gift_exchange"						"Airdrop"
+	"mutation_gift_exchange_Description"			"Gifts are periodically deployed around the map. If you don't claim them, Roshan will!"
+
+	"mutation_speed_freaks"							"Speed Freaks"
+	"mutation_speed_freaks_Description"				"Enemy units have double their normal movement speed."
+
+	"mutation_fire_sales"							"Fire Sales"
+	"mutation_fire_sales_Description"				"Every {minutes} minutes, items cost {cost_percent}% of their current price for {seconds} seconds."
+
+	"mutation_battle_hunger"						"Battle Hunger"
+	"mutation_battle_hunger_Description"			"Everytime you kill an enemy's hero your team get troll ult."
+
+	"mutation_frantic"								"Frantic"
+	"mutation_frantic_Description"					"50% Cooldown Reduction and Status Resistance, 100% Mana Regen."
+
+	// Negative
+	"mutation_death_explosion"					"Death Explosion"
+	"mutation_death_explosion_Description"		"Deal 600 + (100 * minutes) damage in a 400 radius on death afer a 0.9 seconds delay."
+
+	"mutation_death_gold_drop"					"Death Gold Drop"
+	"mutation_death_gold_drop_Description"		"Whenever a hero is killed, they drop a gold sack."
+
+	"mutation_stay_frosty"						"Stay Frosty"
+	"mutation_stay_frosty_Description"			"Health regeneration is disabled."
+
+	"mutation_monkey_business"					"Monkey Business"
+	"mutation_monkey_business_Description"		"Every heroes gets mischief ability passively when not attacking or being attacked for 5 seconds."
+
+	"mutation_defense_of_the_ants"				"Defense of the Ants"
+	"mutation_defense_of_the_ants_Description"	"Everytime you die, you respawn smaller."
+
+	"mutation_the_walking_dead"					"The Walking Dead"
+	"mutation_the_walking_dead_Description"		"During night, zombies spawns in Jungle and attack the closest hero."
+
+	"mutation_alien_incubation"					"Alien Incubation"
+	"mutation_alien_incubation_Description"		"Every units spawn uncontrollable Broodlings upon death."
+
+	"mutation_no_health_bar"					"No Health Bar"
+	"mutation_no_health_bar_Description"		"Heroes don't have health bars."
+
+	"mutation_periodic_spellcast"				"Periodic Spellcast"
+	"mutation_periodic_spellcast_Description"	"Every minute, a random spell will be cast on everyone."
+
+	// Terrain
+	"mutation_no_trees"							"No Trees"
+	"mutation_no_trees_Description"				"All trees are cut and do not respawn."
+
+	"mutation_river_fag"						"River Fag"
+	"mutation_river_fag_Description"			"makes the river impassable without forced movement for heroes."
+
+	"mutation_sleepy_river"						"Sleepy River"
+	"mutation_sleepy_river_Description"			"the river is icy, you can drift on it."
+	"mutation_sleepy_river_author"				"76561198015161808"
+
+	"mutation_omni_vision"						"Omni-Vision"
+	"mutation_omni_vision_Description"			"The whole map is revealed."
+	"mutation_omni_vision_author"				"76561198015161808"
+
+	"mutation_fast_runes"						"Fast Runes"
+	"mutation_fast_runes_Description"			"Powerup Runes spawn every 30 seconds. Bounty Runes spawn every 60 seconds."
+
+	"mutation_diretide"							"Diretide"
+	"mutation_diretide_Description"				"Roshan roams around finding targets, killing the enemy if no candies is given (Candies are dropped from lane/neutral creeps, 30% chance)."
+	"mutation_diretide_author"					"76561198015161808"
+
+	"mutation_void_path"						"Void Path"
+	"mutation_void_path_Description"			""
+
+	"mutation_danger_zone"						"Danger Zone"
+	"mutation_danger_zone_Description"			""
+
+	"mutation_reality_rift"						"Reality Rift"
+	"mutation_reality_rift_Description"			""
+
+	"mutation_blizzard"							"Blizzard"
+	"mutation_blizzard_Description"				""
+
+	"mutation_twister"							"Twister"
+	"mutation_twister_Description"				""
+
+	"mutation_minefield"						"Minefield"
+	"mutation_minefield_Description"			"All kinds of mines spawn randomly across the entire map."
 }

@@ -144,7 +144,7 @@ function HideIMR(panel) {
 	} else if (map_info.map_display_name == "imba_1v1") {
 		hide(imr_panel_10v10);
 		hide(imr_panel);
-	} else if (map_info.map_display_name == "imba_frantic_5v5" || map_info.map_display_name == "imba_frantic_10v10") {
+	} else if (map_info.map_display_name == "imba_frantic_5v5" || map_info.map_display_name == "imba_frantic_10v10" || map_info.map_display_name == "imba_mutation_5v5" || map_info.map_display_name == "imba_mutation_10v10") {
 		hide(imr_panel_10v10);
 		hide(imr_panel);
 		hide(rank1v1_panel);
@@ -152,7 +152,7 @@ function HideIMR(panel) {
 }
 
 function OverrideTopBarHeroImage(args) {
-	var arcana_level = args.arcana + 1
+	var arcana_level = args.arcana
 	var team = "Radiant"
 	if (Players.GetTeam(Players.GetLocalPlayer()) == 3) {
 		team = "Dire"
@@ -173,52 +173,38 @@ if (FindDotaHudElement("RadiantPlayer" + Players.GetLocalPlayer()).FindChildTrav
 
 function OverrideHeroImage(arcana_level, panel, hero_name) {
 	if (arcana_level != false) {
-		if (arcana_level > 2) {arcana_level = 2}
+		if (arcana_level > 1) {arcana_level = 1}
 		// list of heroes wich have arcana implented in imbattlepass
 		var newheroimage = $.CreatePanel('Panel', panel, '');
 		newheroimage.style.width = "100%";
 		newheroimage.style.height = "100%";
-		newheroimage.style.backgroundImage = 'url("file://{images}/heroes/npc_dota_hero_' + hero_name + '_alt' + arcana_level + '.png")';
+		newheroimage.style.backgroundImage = 'url("file://{images}/heroes/npc_dota_hero_' + hero_name + '_arcana' + arcana_level + '.png")';
 		newheroimage.style.backgroundSize = "cover";
 
-		panel.style.border = "1px solid #99ff33";
-		panel.style.boxShadow = "fill lightgreen -4px -4px 8px 8px";
-		var newherolabel = $.CreatePanel('Label', panel, '');
-		newherolabel.AddClass("Arcana")
-		newherolabel.text = "Arcana!"
+//		panel.style.border = "1px solid #99ff33";
+//		panel.style.boxShadow = "fill lightgreen -4px -4px 8px 8px";
+
+//		var newherolabel = $.CreatePanel('Label', panel, '');
+//		newherolabel.AddClass("Arcana")
+//		newherolabel.text = "Arcana!"
 	}
 }
 
-//	function OverrideTopBarColor(args) {
-//		var team = "Radiant"
-//		if (Players.GetTeam(Players.GetLocalPlayer()) == 3) {
-//			team = "Dire"
-//		}
-//	
-//		var panel = FindDotaHudElement(team + "Player" + Players.GetLocalPlayer())
-//		var picked_hero = Game.GetLocalPlayerInfo().player_selected_hero
-//	
-//		picked_hero = picked_hero.replace('npc_dota_hero_', "")
-//	
-//		var color = args.color.replace('0X', '#')
-//	
-//		if (panel.FindChildTraverse("HeroImage").heroname == picked_hero) {
-//			if (panel.FindChildTraverse("PlayerNewColor")) {
-//				return;
-//			} else {
-//				var color_panel = $.CreatePanel('Panel', panel.FindChildTraverse("PlayerColor"), 'PlayerNewColor');
-//				color_panel.style.width = "100%";
-//				color_panel.style.height = "4px";
-//				color_panel.style.backgroundColor = color;
-//				color_panel.style.backgroundImage = 'url("s2r://panorama/images/hud/reborn/topbar_playerslot_vignette_psd.vtex")';
-//				color_panel.style.backgroundSize = '92% 100%';
-//				color_panel.style.backgroundRepeat = 'no-repeat';
-//	
-//	//			$.Msg("---------------")
-//	//			$.Msg(color_panel.style.backgroundColor)
-//	//			$.Msg(color)
-//			}
-//		}
-//	}
+function OverrideTopBarColor() {
+	var colors = CustomNetTables.GetTableValue("game_options", "player_colors")
 
-//	GameEvents.Subscribe("override_top_bar_colors", OverrideTopBarColor);
+	for (var id in colors) {
+		if (!Players.GetTeam(parseInt(id))) {return $.Msg("No player for this ID, stop loop.")};
+		var team = "Radiant"
+
+		if (Players.GetTeam(parseInt(id)) == 3) {
+			team = "Dire"
+		}
+
+		var panel = FindDotaHudElement(team + "Player" + id)
+		$.Msg(id)
+		panel.FindChildTraverse('PlayerColor').style.backgroundColor = colors[id];
+	}    
+}
+
+GameEvents.Subscribe("override_top_bar_colors", OverrideTopBarColor);

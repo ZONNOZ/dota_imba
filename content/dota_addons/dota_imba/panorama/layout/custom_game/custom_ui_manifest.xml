@@ -112,17 +112,18 @@
 		Parent.FindChildTraverse("PreGame").style.visibility = "collapse";
 		hudElements.FindChildTraverse("combat_events").style.visibility = "collapse";
 
+		// DISABLED UNTIL A FIX IS FOUND FOR RIGHT MINIMAP BUG
 		//Buff Bar
-		var BuffBar = hudElements.FindChildTraverse("lower_hud").FindChildTraverse("buffs")
-		BuffBar.style.width = "30%";
-		BuffBar.style.marginLeft = "40%";
+//		var BuffBar = hudElements.FindChildTraverse("lower_hud").FindChildTraverse("buffs")
+//		BuffBar.style.width = "30%";
+//		BuffBar.style.marginLeft = "40%";
 
 		//DeBuff Bar
-		var DeBuffBar = hudElements.FindChildTraverse("lower_hud").FindChildTraverse("debuffs")
-		DeBuffBar.style.width = "30%";
-		DeBuffBar.style.marginBottom = "40.5%";
-		DeBuffBar.style.marginRight = "30%";
-		DeBuffBar.style.flowChildren = "right";
+//		var DeBuffBar = hudElements.FindChildTraverse("lower_hud").FindChildTraverse("debuffs")
+//		DeBuffBar.style.width = "30%";
+//		DeBuffBar.style.marginBottom = "40.5%";
+//		DeBuffBar.style.marginRight = "30%";
+//		DeBuffBar.style.flowChildren = "right";
 
 		//Recommended Talent
 		var TalentGuide = hudElements.FindChildTraverse("lower_hud").FindChildTraverse("center_with_stats")
@@ -173,6 +174,7 @@
 	<Panel>
 	<!-- CustomUIElements go here.  They are not provided currently as valve's parser reads commented lines and attempts to link them in.-->
 <!--	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/hud_main.xml" /> -->
+		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/mutation.xml" />
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/gg.xml" />
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/worldpanels.xml" />
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/overthrow_item_notification.xml" />
@@ -184,7 +186,6 @@
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/precache.xml" />
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/team_select.xml" />
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/game_mode.xml" />
-		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/barebones_attachments.xml" />
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/barebones_notifications.xml" />
 		<CustomUIElement type="EndScreen" layoutfile="file://{resources}/layout/custom_game/multiteam_end_screen.xml" />
 		<CustomUIElement type="FlyoutScoreboard" layoutfile="file://{resources}/layout/custom_game/multiteam_flyout_scoreboard.xml" />

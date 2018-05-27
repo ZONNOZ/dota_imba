@@ -16,28 +16,6 @@
 --     EarthSalamander #42
 --
 
-function DebugPrint(...)
-	--local spew = Convars:GetInt('barebones_spew') or -1
-	--if spew == -1 and BAREBONES_DEBUG_SPEW then
-	--spew = 1
-	--end
-
-	--if spew == 1 then
-	--print(...)
-	--end
-end
-
-function DebugPrintTable(...)
-	--local spew = Convars:GetInt('barebones_spew') or -1
-	--if spew == -1 and BAREBONES_DEBUG_SPEW then
-	--spew = 1
-	--end
-
-	--if spew == 1 then
-	--PrintTable(...)
-	--end
-end
-
 function PrintAll(t)
 	log.debug(t)
 end
@@ -247,6 +225,7 @@ function GoldPickup(event)
 		local item = EntIndexToHScript( event.ItemEntityIndex )
 		local owner = EntIndexToHScript( event.HeroEntityIndex )
 		local gold_per_bag = item:GetCurrentCharges()
+
 		PlayerResource:ModifyGold( owner:GetPlayerID(), gold_per_bag, true, 0 )
 		SendOverheadEventMessage( owner, OVERHEAD_ALERT_GOLD, owner, gold_per_bag, nil )
 		UTIL_Remove( item ) -- otherwise it pollutes the player inventory
@@ -750,14 +729,16 @@ if player_id == "test_reconnect" then player_id = 0 end
 		if PlayerResource:GetSelectedHeroEntity(player_id) then
 			CustomGameEventManager:Send_ServerToAllClients("player_reconnected", {PlayerID = player_id, PickedHeroes = HeroSelection.picked_heroes, pickState = pick_state, repickState = repick_state})
 
---			local table = {
---				ID = player_id,
---				team = PlayerResource:GetTeam(player_id),
---				disconnect = 2,
---			}
+--			Timers:CreateTimer(3.0, function()
+--				local table = {
+--					ID = player_id,
+--					team = PlayerResource:GetTeam(player_id),
+--					disconnect = 2,
+--				}
 
---			print("Decrease GG Amount!")
---			GameMode:GG(table)
+--				print("Decrease GG Amount!")
+--				GameMode:GG(table)
+--			end)
 
 			local hero = PlayerResource:GetSelectedHeroEntity(player_id)
 
@@ -882,10 +863,6 @@ end
 
 -- Spawns runes on the map
 function SpawnImbaRunes()
-bounty_rune_is_initial_bounty_rune = false
-
-	-- Remove any existing runes, if any
-	RemoveRunes()
 
 	-- List of powerup rune types
 	local powerup_rune_types = {}
@@ -899,30 +876,32 @@ bounty_rune_is_initial_bounty_rune = false
 --	powerup_rune_types[8] = {"item_imba_rune_ember", "particles/econ/items/shadow_fiend/sf_fire_arcana/sf_fire_arcana_trail.vpcf"}
 --	powerup_rune_types[9] = {"item_imba_rune_stone", "particles/econ/items/natures_prophet/natures_prophet_flower_treant/natures_prophet_flower_treant_ambient.vpcf"}
 
-	local rune
-	local particle
-	local random_int = RandomInt(1, #powerup_rune_types)
-	for k, v in pairs(powerup_rune_locations) do
-		rune = CreateItemOnPositionForLaunch(powerup_rune_locations[k], CreateItem(powerup_rune_types[random_int][1], nil, nil))
-		RegisterRune(rune)
-		SpawnRuneParticle(rune, powerup_rune_types[random_int][2])
-	end
+	Timers:CreateTimer(function()
+		local random_int = RandomInt(1, #powerup_rune_types)
 
-	for k, v in pairs(bounty_rune_locations) do
-		local bounty_rune = CreateItem("item_imba_rune_bounty", nil, nil)
-		rune = CreateItemOnPositionForLaunch(bounty_rune_locations[k], bounty_rune)		
-		RegisterRune(rune)
+		RemoveRunes(1)
 
-		-- If these are the 00:00 runes, double their worth
-		local game_time = GameRules:GetDOTATime(false, false)
-		if game_time < 1 then
-			bounty_rune_is_initial_bounty_rune = true
-			SpawnRuneParticle(rune, "particles/generic_gameplay/rune_bounty_first.vpcf")
-		else
-			bounty_rune_is_initial_bounty_rune = false
-			SpawnRuneParticle(rune, "particles/generic_gameplay/rune_bounty.vpcf")
+		for k, v in pairs(powerup_rune_locations) do
+			local rune = CreateItemOnPositionForLaunch(powerup_rune_locations[k], CreateItem(powerup_rune_types[random_int][1], nil, nil))
+			RegisterRune(rune, 1)
+			SpawnRuneParticle(rune, powerup_rune_types[random_int][2])
 		end
-	end
+
+		return RUNE_SPAWN_TIME
+	end)
+
+	Timers:CreateTimer(function()
+		RemoveRunes(2)
+
+		for k, v in pairs(bounty_rune_locations) do
+			local bounty_rune = CreateItem("item_imba_rune_bounty", nil, nil)
+			local rune = CreateItemOnPositionForLaunch(bounty_rune_locations[k], bounty_rune)		
+			RegisterRune(rune, 2)
+			SpawnRuneParticle(rune, "particles/generic_gameplay/rune_bounty_first.vpcf")
+		end
+
+		return BOUNTY_RUNE_SPAWN_TIME
+	end)
 end
 
 function SpawnRuneParticle(rune, particle)
@@ -931,7 +910,7 @@ function SpawnRuneParticle(rune, particle)
 	ParticleManager:ReleaseParticleIndex(rune_particle)
 end
 
-function RegisterRune(rune)
+function RegisterRune(rune, rune_type)
 	AddFOWViewer(2, rune:GetAbsOrigin(), 100, 0.02, false)
 	AddFOWViewer(3, rune:GetAbsOrigin(), 100, 0.02, false)
 
@@ -940,15 +919,30 @@ function RegisterRune(rune)
 		rune_spawn_table = {}
 	end
 
+	if not bounty_rune_spawn_table then
+		bounty_rune_spawn_table = {}
+	end
+
 	-- Register rune into table
-	table.insert(rune_spawn_table, rune)
+	if rune_type == 1 then
+		table.insert(rune_spawn_table, rune)
+	elseif rune_type == 2 then
+		table.insert(bounty_rune_spawn_table, rune)
+	end
 end
 
-function RemoveRunes()
-	if rune_spawn_table then
+function RemoveRunes(rune_type)
+	local rune_table
 
+	if rune_type == 1 then
+		rune_table = rune_spawn_table
+	elseif rune_type == 2 then
+		rune_table = bounty_rune_spawn_table
+	end
+
+	if rune_table then
 		-- Remove existing runes
-		for _,rune in pairs(rune_spawn_table) do
+		for _, rune in pairs(rune_table) do
 			if not rune:IsNull() then								
 				local item = rune:GetContainedItem()
 				UTIL_Remove(item)
@@ -957,7 +951,7 @@ function RemoveRunes()
 		end
 
 		-- Clear the table
-		rune_spawn_table = {}
+		rune_table = {}
 	end
 end
 
@@ -1025,21 +1019,17 @@ function PickupRune(rune_name, unit, bActiveByBottle)
 				end
 			end
 
-			-- If this is the first bounty rune spawn, double the base bounty
-			if bounty_rune_is_initial_bounty_rune then
-				for _, hero in pairs(HeroList:GetAllHeroes()) do
-					if hero:GetTeam() == unit:GetTeam() then
-						if (hero:GetUnitName() == "npc_dota_hero_monkey_king" and not hero.is_real_mk) or (hero:GetUnitName() == "npc_dota_hero_meepo" and not hero.is_real_meepo) or hero:IsIllusion() then
-						else
-							hero:ModifyGold(current_bounty, false, DOTA_ModifyGold_Unspecified)
-							SendOverheadEventMessage(PlayerResource:GetPlayer(hero:GetPlayerOwnerID()), OVERHEAD_ALERT_GOLD, hero, current_bounty, nil)
-						end
+			-- global bounty rune
+			for _, hero in pairs(HeroList:GetAllHeroes()) do
+				if hero:GetTeam() == unit:GetTeam() then
+					if (hero:GetUnitName() == "npc_dota_hero_monkey_king" and not hero.is_real_mk) or (hero:GetUnitName() == "npc_dota_hero_meepo" and not hero.is_real_meepo) or hero:IsIllusion() then
+					else
+						hero:ModifyGold(current_bounty, false, DOTA_ModifyGold_Unspecified)
+						SendOverheadEventMessage(PlayerResource:GetPlayer(hero:GetPlayerOwnerID()), OVERHEAD_ALERT_GOLD, hero, current_bounty, nil)
 					end
 				end
-			else
-				unit:ModifyGold(current_bounty, false, DOTA_ModifyGold_Unspecified)
-				SendOverheadEventMessage(PlayerResource:GetPlayer(unit:GetPlayerOwnerID()), OVERHEAD_ALERT_GOLD, unit, current_bounty, nil)
 			end
+
 --			EmitSoundOnLocationForAllies(unit:GetAbsOrigin(), "General.Coins", unit)
 			EmitSoundOnLocationForAllies(unit:GetAbsOrigin(), "Rune.Bounty", unit)
 		elseif rune_name == "arcane" then
@@ -1096,7 +1086,7 @@ function PickupRune(rune_name, unit, bActiveByBottle)
 			text = "#custom_toast_ActivatedRune",
 			player = unit:GetPlayerID(),
 			runeType = rune_name,
-			runeFirst = bounty_rune_is_initial_bounty_rune
+			runeFirst = true, -- every bounty runes are global now
 		})
 	end
 end
@@ -1300,10 +1290,12 @@ streak[10] = "Beyond Godlike"
 		if reason == "courier_respawn" then
 			text = "#custom_toast_CourierRespawned"
 			team = victim:GetTeam()
+			victim_id = victim.owner_id
 			courier = true
 		elseif reason == "courier_dead" then
 			text = "#custom_toast_CourierKilled"
 			team = victim:GetTeam()
+			victim_id = victim.owner_id
 			courier = true
 		elseif reason == "tower_kill_hero" then
 			text = "#custom_toast_TeamKilled"
@@ -1324,12 +1316,14 @@ streak[10] = "Beyond Godlike"
 			type = "generic",
 			text = text,
 			teamColor = team,
+			teamPlayer = team,
 			team = team,
 			victimUnitName = victim_name,
 			courier = courier,
 			gold = gold,
 			tower = tower,
 			glyph = glyph,
+			victimPlayer = victim_id,			
 		})
 	elseif event_type == "kill" then
 		if reason == "first_blood" then
@@ -1574,12 +1568,13 @@ end
 
 function HideWearable(hero, item)
 	Timers:CreateTimer(function()
---		print("Check for cosmetic to hide...")
---		for i = 0, 44 do
---			if hero:GetTogglableWearable(i) then
---				print("WEARABLE:", i)
---			end
---		end
+		print("Check for cosmetic to hide...")
+
+		for i = 0, 44 do
+			if hero:GetTogglableWearable(i) then
+				print("WEARABLE:", i)
+			end
+		end
 
 		local wearable = hero:GetTogglableWearable(item)
 		if wearable then
@@ -1591,6 +1586,159 @@ function HideWearable(hero, item)
 	end)
 end
 
-function PreventCommand()
-	print("Do not use this command!")
+--[[Author: Noya
+	Editor: EarthSalamander #42
+	Date: 09.08.2015.
+	Hides all dem hats
+]]
+function HideWearables(hero, number)
+	local model = hero:FirstMoveChild()
+	local i = 0
+
+	hero.hiddenWearables = {} -- Keep every wearable handle in a table to show them later
+
+	Timers:CreateTimer(3.0, function()
+		while model do
+			print("model count/classname:", i, model:GetClassname())
+			if model:GetClassname() == "dota_item_wearable" then
+--			if model:GetClassname() == "dota_item_wearable" and i == number then
+				print("Model has been hidden:", model:GetClassname())
+				model:AddEffects(EF_NODRAW) -- Set model hidden
+				table.insert(hero.hiddenWearables, model)
+			end
+
+			i = i + 1
+			model = model:NextMovePeer()
+		end
+	end)
+end
+
+function SwapWearable( unit, target_model, new_model )
+    local wearable = unit:FirstMoveChild()
+    while wearable ~= nil do
+        if wearable:GetClassname() == "dota_item_wearable" then
+            if wearable:GetModelName() == target_model then
+                wearable:SetModel( new_model )
+                return
+            end
+        end
+        wearable = wearable:NextMovePeer()
+    end
+end
+
+-- Returns a wearable handle if its the passed target_model
+function GetWearable( unit, target_model )
+    local wearable = unit:FirstMoveChild()
+    while wearable ~= nil do
+        if wearable:GetClassname() == "dota_item_wearable" then
+            if wearable:GetModelName() == target_model then
+                return wearable
+            end
+        end
+        wearable = wearable:NextMovePeer()
+    end
+    return false
+end
+
+function HideWearable( unit, target_model )
+    local wearable = unit:FirstMoveChild()
+    while wearable ~= nil do
+        if wearable:GetClassname() == "dota_item_wearable" then
+            if wearable:GetModelName() == target_model then
+                wearable:AddEffects(EF_NODRAW)
+                return
+            end
+        end
+        wearable = wearable:NextMovePeer()
+    end
+end
+
+function ShowWearable( unit, target_model )
+    local wearable = unit:FirstMoveChild()
+    while wearable ~= nil do
+        if wearable:GetClassname() == "dota_item_wearable" then
+            if wearable:GetModelName() == target_model then
+                wearable:RemoveEffects(EF_NODRAW)
+                return
+            end
+        end
+        wearable = wearable:NextMovePeer()
+    end
+end
+
+--[[
+function PrintWearables( unit )
+    print("---------------------")
+    print("Wearable List of "..unit:GetUnitName())
+    print("Main Model: "..unit:GetModelName())
+    local wearable = unit:FirstMoveChild()
+    while wearable ~= nil do
+        if wearable:GetClassname() == "dota_item_wearable" then
+            local model_name = wearable:GetModelName()
+            if model_name ~= "" then print(model_name) end
+        end
+        wearable = wearable:NextMovePeer()
+    end
+end
+
+function PrecacheWearables( context )
+    local hats = LoadKeyValues("scripts/kv/wearables.kv")
+    for k1,unit_table in pairs(hats) do
+        for k2,sub_table in pairs(unit_table) do
+            for k3,wearables in pairs(sub_table) do
+                for k4,v in pairs (wearables) do
+                    if type(v) == "string" and v ~= "" then
+                        PrecacheResource("particle", v, context)
+                    else
+                        PrecacheModel(model, context)
+                    end
+                end
+            end
+        end
+    end
+end
+--]]
+
+function SpawnEasterEgg()
+	if RandomInt(1, 100) > 20 then
+		Timers:CreateTimer((RandomInt(10, 20) * 60) + RandomInt(0, 60), function()
+			local pos = {}
+			pos[1] = Vector(6446, -6979, 1496)
+			pos[2] = Vector(RandomInt(-6000, 0), RandomInt(7150, 7300), 1423)
+			pos[3] = Vector(RandomInt(-1000, 2000), RandomInt(6900, 7200), 1440)
+			pos[4] = Vector(7041, -6263, 1461)
+			local pos = pos[RandomInt(1, 4)]
+
+			GridNav:DestroyTreesAroundPoint(pos, 80, false)
+			local item = CreateItem("item_the_caustic_finale", nil, nil)
+			local drop = CreateItemOnPositionSync(pos, item)
+		end)
+	end
+end
+
+function BlockJungleCamps()
+	local blocked_camps = {}
+	blocked_camps[1] = {"neutralcamp_evil_1", Vector(-4170, 3670, 512)}
+	blocked_camps[2] = {"neutralcamp_evil_2", Vector(-3030, 4500, 512)}
+	blocked_camps[3] = {"neutralcamp_evil_3", Vector(-2000, 4220, 384)}
+	blocked_camps[4] = {"neutralcamp_evil_4", Vector(-10, 3300, 512)}
+	blocked_camps[5] = {"neutralcamp_evil_5", Vector(1315, 3520, 512)}
+	blocked_camps[6] = {"neutralcamp_evil_6", Vector(-675, 2280, 1151)}
+	blocked_camps[7] = {"neutralcamp_evil_7", Vector(2400, 360, 520)}
+	blocked_camps[8] = {"neutralcamp_evil_8", Vector(4060, -620, 384)}
+	blocked_camps[9] = {"neutralcamp_evil_9", Vector(4100, 1050, 1288)}
+	blocked_camps[10] = {"neutralcamp_good_1", Vector(3010, -4430, 512)}
+	blocked_camps[11] = {"neutralcamp_good_2", Vector(4810, -4200, 512)}
+	blocked_camps[12] = {"neutralcamp_good_3", Vector(787, -4500, 512)}
+	blocked_camps[13] = {"neutralcamp_good_4", Vector(-430, -3100, 384)}
+	blocked_camps[14] = {"neutralcamp_good_5", Vector(-1500, -4290, 384)}
+	blocked_camps[15] = {"neutralcamp_good_6", Vector(-3040, 100, 512)}
+	blocked_camps[16] = {"neutralcamp_good_7", Vector(-3700, 890, 512)}
+	blocked_camps[17] = {"neutralcamp_good_8", Vector(-4780, -190, 512)}
+	blocked_camps[18] = {"neutralcamp_good_9", Vector(256, -1717, 1280)}
+
+	for i = 1, #blocked_camps do
+		local ent = Entities:FindByName(nil, blocked_camps[i][1])
+		local dummy = CreateUnitByName("npc_dummy_unit_perma", blocked_camps[i][2], true, nil, nil, DOTA_TEAM_NEUTRALS)
+	end
 end

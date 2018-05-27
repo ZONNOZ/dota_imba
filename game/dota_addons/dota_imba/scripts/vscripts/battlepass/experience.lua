@@ -1,12 +1,12 @@
 -- Experience System
 CustomNetTables:SetTableValue("game_options", "game_count", {value = 1})
-XP_level_table = {0,100,200,300,400,500,700,900,1100,1300,1500,1800,2100,2400,2700,3000,3400,3800,4200,4600,5000}
---------------    0  1   2   3   4   5   6   7    8    9   10   11   12   13   14   15   16   17   18   19   20
 
-local bonus = 0
-for i = 21 +1, 500 do
-	bonus = bonus +25
-	XP_level_table[i] = XP_level_table[i-1] + 500 + bonus
+XP_level_table = {}
+XP_level_table[0] = 0
+
+-- xp needed increased by 500 every 25 levels
+for i = 1, 500 do
+	XP_level_table[i] = XP_level_table[i-1] + (500 * (math.floor(i / 25) + 1))
 end
 
 function GetXPLevelByXp(xp)
@@ -73,99 +73,79 @@ function GetTitleIXP(level)
 	end
 end
 
-function GetTitleColorIXP(title, js)
-	if js == true then
-		if title == "Rookie" then
-			return "#FFFFFF"
-		elseif title == "Amateur" then
-			return "#66CC00"
-		elseif title == "Captain" then
-			return "#4C8BCA"
-		elseif title == "Warrior" then
-			return "#004C99"
-		elseif title == "Commander" then
-			return "#985FD1"
-		elseif title == "General" then
-			return "#460587"
-		elseif title == "Master" then
-			return "#FA5353"
-		elseif title == "Epic" then
-			return "#8E0C0C"
-		elseif title == "Legendary" then
-			return "#EFBC14"
-		elseif title == "Ancient" then
-			return "#BF950D"
-		elseif title == "Amphibian" then
-			return "#000066"
-		elseif title == "Icefrog" then
-			return "#1456EF"
-		else -- it's Firetoaaaaaaaaaaad!
-			return "#C75102"
-		end
-	else
-		if title == "Rookie" then
-			return {255, 255, 255}
-		elseif title == "Amateur" then
-			return {102, 204, 0}
-		elseif title == "Captain" then
-			return {76, 139, 202}
-		elseif title == "Warrior" then
-			return {0, 76, 153}
-		elseif title == "Commander" then
-			return {152, 95, 209}
-		elseif title == "General" then
-			return {70, 5, 135}
-		elseif title == "Master" then
-			return {250, 83, 83}
-		elseif title == "Epic" then
-			return {142, 12, 12}
-		elseif title == "Legendary" then
-			return {239, 188, 20}
-		elseif title == "Ancient" then
-			return {191, 149, 13}
-		elseif title == "Amphibian" then
-			return {0, 0, 102}
-		elseif title == "Icefrog" then
-			return {20, 86, 239}
-		else -- it's Firetoaaaaaaaaaaad!
-			return {199, 81, 2}
-		end
+function GetTitleColorIXP(title)
+	if title == "Rookie" then
+		return {255, 255, 255}
+	elseif title == "Amateur" then
+		return {102, 204, 0}
+	elseif title == "Captain" then
+		return {76, 139, 202}
+	elseif title == "Warrior" then
+		return {0, 76, 153}
+	elseif title == "Commander" then
+		return {152, 95, 209}
+	elseif title == "General" then
+		return {70, 5, 135}
+	elseif title == "Master" then
+		return {250, 83, 83}
+	elseif title == "Epic" then
+		return {142, 12, 12}
+	elseif title == "Legendary" then
+		return {239, 188, 20}
+	elseif title == "Ancient" then
+		return {191, 149, 13}
+	elseif title == "Amphibian" then
+		return {0, 0, 102}
+	elseif title == "Icefrog" then
+		return {20, 86, 239}
+	else -- it's Firetoaaaaaaaaaaad!
+		return {199, 81, 2}
 	end
 end
 
 function GetPlayerInfoIXP() -- yet it has too much useless loops, format later. Need to be loaded in game setup
-	if not api.imba.ready then return end
+	if not api.imba.ready then
+		Timers:CreateTimer(1.0, function()
+			GetPlayerInfoIXP()
+		end)
 
-	local level = {}
+		return
+	end
+
 	local current_xp_in_level = {}
-	local max_xp = {}
 
 	for ID = 0, PlayerResource:GetPlayerCount() -1 do
 		local global_xp = api.imba.get_player_info(PlayerResource:GetSteamID(ID)).xp
-		level[ID] = 0
+		local level = GetXPLevelByXp(global_xp)
+		local previous_xp = XP_level_table[level - 1]
+		local current_xp_in_level
+		local max_xp
 
 		for i = 1, #XP_level_table do
-			if global_xp > XP_level_table[i] then
+			if global_xp >= XP_level_table[i] then
 				if global_xp >= XP_level_table[#XP_level_table] then -- if max level
-					level[ID] = #XP_level_table
-					current_xp_in_level[ID] = XP_level_table[level[ID]] - XP_level_table[level[ID]-1]
-					max_xp[ID] = XP_level_table[level[ID]] - XP_level_table[level[ID]-1]
+					current_xp_in_level = XP_level_table[level] - previous_xp
+					max_xp = XP_level_table[level] - previous_xp
 				else
-					level[ID] = i
-					current_xp_in_level[ID] = 0
-					current_xp_in_level[ID] = global_xp - XP_level_table[i]
-					max_xp[ID] = XP_level_table[level[ID]+1] - XP_level_table[level[ID]]
+					level = i
+					current_xp_in_level = 0
+					current_xp_in_level = global_xp - XP_level_table[i]
+					max_xp = XP_level_table[level + 1] - XP_level_table[level]
 				end
+			elseif global_xp == 0 then
+				level = 1
+				current_xp_in_level = 0
+				max_xp = XP_level_table[1]
 			end
 		end
 
 		CustomNetTables:SetTableValue("player_table", tostring(ID),
 		{
-			XP = current_xp_in_level[ID],
-			MaxXP = max_xp[ID],
-			Lvl = level[ID], -- add +1 only on the HUD else you are level 0 at the first level
-			title = GetTitleIXP(level[ID]),
-			title_color = GetTitleColorIXP(GetTitleIXP(level[ID]), true),
+			XP = current_xp_in_level,
+			MaxXP = max_xp,
+			Lvl = level,
+			title = GetTitleIXP(level),
+			title_color = rgbToHex(GetTitleColorIXP(GetTitleIXP(level))),
 			IMR_5v5 = api.imba.get_player_info(PlayerResource:GetSteamID(ID)).imr5v5,
 			IMR_10v10 = api.imba.get_player_info(PlayerResource:GetSteamID(ID)).imr10v10,
 			IMR_5v5_calibrating = api.imba.get_player_info(PlayerResource:GetSteamID(ID)).imr5v5_calibrating,
@@ -177,31 +157,31 @@ function GetPlayerInfoIXP() -- yet it has too much useless loops, format later. 
 
 	GetTopPlayersIXP()
 	GetTopPlayersIMR()
+
+	-- Initialize Battle Pass
+	Imbattlepass:Init()
 end
 
 function GetTopPlayersIXP()
 	if not api.imba.ready then return end
 
-	local level = {}
-	local current_xp_in_level = {}
-	local max_xp = {}
-
 	for _, top_user in pairs(api.imba.get_rankings_xp()) do
 		local global_xp = top_user.xp
-
-		level[top_user.rank] = 0
+		local level = GetXPLevelByXp(global_xp)
+		local current_xp_in_level
+		local max_xp
 
 		for i = 1, #XP_level_table do
 			if global_xp > XP_level_table[i] then
 				if global_xp > XP_level_table[#XP_level_table] then -- if max level
-					level[top_user.rank] = #XP_level_table
-					current_xp_in_level[top_user.rank] = XP_level_table[level[top_user.rank]] - XP_level_table[level[top_user.rank]]
-					max_xp[top_user.rank] = XP_level_table[level[top_user.rank]] - XP_level_table[level[top_user.rank]]
+					level = #XP_level_table
+					current_xp_in_level = XP_level_table[level] - XP_level_table[level]
+					max_xp = XP_level_table[level] - XP_level_table[level]
 				else
-					level[top_user.rank] = i +1
-					current_xp_in_level[top_user.rank] = 0
-					current_xp_in_level[top_user.rank] = global_xp - XP_level_table[i]
-					max_xp[top_user.rank] = XP_level_table[level[top_user.rank]+1] - XP_level_table[level[top_user.rank]]
+					level = i +1
+					current_xp_in_level = 0
+					current_xp_in_level = global_xp - XP_level_table[i]
+					max_xp = XP_level_table[level + 1] - XP_level_table[level]
 				end
 			end
 		end
@@ -209,11 +189,11 @@ function GetTopPlayersIXP()
 		CustomNetTables:SetTableValue("top_xp", tostring(top_user.rank),
 		{
 			SteamID64 = top_user.steamid,
-			XP = current_xp_in_level[top_user.rank],
-			MaxXP = max_xp[top_user.rank],
-			Lvl = level[top_user.rank],
-			title = GetTitleIXP(level[top_user.rank]),
-			title_color = GetTitleColorIXP(GetTitleIXP(level[top_user.rank]), true),
+			XP = current_xp_in_level,
+			MaxXP = max_xp,
+			Lvl = level,
+			title = GetTitleIXP(level),
+			title_color = rgbToHex(GetTitleColorIXP(level)),
 			IMR_5v5 = top_user.imr5v5,
 		})
 	end
@@ -222,26 +202,23 @@ end
 function GetTopPlayersIMR()
 	if not api.imba.ready then return end
 
-	local level = {}
-	local current_xp_in_level = {}
-	local max_xp = {}
-
 	for _, top_user in pairs(api.imba.get_rankings_imr5v5()) do
 		local global_xp = top_user.xp
-
-		level[top_user.rank] = 0
+		local level = GetXPLevelByXp(global_xp)
+		local current_xp_in_level
+		local max_xp
 
 		for i = 1, #XP_level_table do
 			if global_xp > XP_level_table[i] then
 				if global_xp > XP_level_table[#XP_level_table] then -- if max level
-					level[top_user.rank] = #XP_level_table
-					current_xp_in_level[top_user.rank] = XP_level_table[level[top_user.rank]] - XP_level_table[level[top_user.rank]]
-					max_xp[top_user.rank] = XP_level_table[level[top_user.rank]] - XP_level_table[level[top_user.rank]]
+					level = #XP_level_table
+					current_xp_in_level = XP_level_table[level] - XP_level_table[level]
+					max_xp = XP_level_table[level] - XP_level_table[level]
 				else
-					level[top_user.rank] = i +1 -- transform level 0 into level 1
-					current_xp_in_level[top_user.rank] = 0
-					current_xp_in_level[top_user.rank] = global_xp - XP_level_table[i]
-					max_xp[top_user.rank] = XP_level_table[level[top_user.rank]+1] - XP_level_table[level[top_user.rank]]
+					level = i +1 -- transform level 0 into level 1
+					current_xp_in_level = 0
+					current_xp_in_level = global_xp - XP_level_table[i]
+					max_xp = XP_level_table[level + 1] - XP_level_table[level]
 				end
 			end
 		end
@@ -249,11 +226,11 @@ function GetTopPlayersIMR()
 		CustomNetTables:SetTableValue("top_imr5v5", tostring(top_user.rank),
 		{
 			SteamID64 = top_user.steamid,
-			XP = current_xp_in_level[top_user.rank],
-			MaxXP = max_xp[top_user.rank],
-			Lvl = level[top_user.rank],
-			title = GetTitleIXP(level[top_user.rank]),
-			title_color = GetTitleColorIXP(GetTitleIXP(level[top_user.rank]), true),
+			XP = current_xp_in_level,
+			MaxXP = max_xp,
+			Lvl = level,
+			title = GetTitleIXP(level),
+			title_color = rgbToHex(GetTitleColorIXP(GetTitleIXP(level))),
 			IMR_5v5 = top_user.imr5v5,
 		})
 	end

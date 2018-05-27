@@ -56,6 +56,7 @@ MINIMAP_CREEP_ICON_SIZE = 1					-- What icon size should we use for creeps?
 MINIMAP_RUNE_ICON_SIZE = 1					-- What icon size should we use for runes?
 
 RUNE_SPAWN_TIME = 120						-- How long in seconds should we wait between rune spawns?
+BOUNTY_RUNE_SPAWN_TIME = 300
 CUSTOM_BUYBACK_COST_ENABLED = true			-- Should we use a custom buyback cost setting?
 CUSTOM_BUYBACK_COOLDOWN_ENABLED = true		-- Should we use a custom buyback time?
 BUYBACK_ENABLED = true						-- Should we allow people to buyback when they die?
@@ -67,7 +68,6 @@ USE_NONSTANDARD_HERO_XP_BOUNTY = true		-- Should heroes follow their own XP boun
 
 USE_CUSTOM_TOP_BAR_VALUES = false			-- Should we do customized top bar values or use the default kill count per team?
 TOP_BAR_VISIBLE = true						-- Should we display the top bar score/count at all?
-SHOW_KILLS_ON_TOPBAR = true					-- Should we display kills only on the top bar? (No denies, suicides, kills by neutrals)  Requires USE_CUSTOM_TOP_BAR_VALUES
 
 ENABLE_TOWER_BACKDOOR_PROTECTION = true		-- Should we enable backdoor protection for our towers?
 REMOVE_ILLUSIONS_ON_DEATH = false			-- Should we remove all illusions if the main hero dies?
@@ -76,16 +76,13 @@ DISABLE_GOLD_SOUNDS = false					-- Should we disable the gold sound when players
 ENABLE_FIRST_BLOOD = true					-- Should we enable first blood for the first kill in this game?
 HIDE_KILL_BANNERS = false					-- Should we hide the kill banners that show when a player is killed?
 LOSE_GOLD_ON_DEATH = true					-- Should we have players lose the normal amount of dota gold on death?
-SHOW_ONLY_PLAYER_INVENTORY = false			-- Should we only allow players to see their own inventory even when selecting other units?
-DISABLE_STASH_PURCHASING = false			-- Should we prevent players from being able to buy items into their stash when not at a shop?
-DISABLE_ANNOUNCER = false					-- Should we disable the announcer from working in the game?
 FORCE_PICKED_HERO = "npc_dota_hero_dummy_dummy"						-- What hero should we force all players to spawn as? (e.g. "npc_dota_hero_axe").  Use nil to allow players to pick their own hero.
 
 FIXED_RESPAWN_TIME = -1						-- What time should we use for a fixed respawn timer?  Use -1 to keep the default dota behavior.
 FOUNTAIN_CONSTANT_MANA_REGEN = 14			-- What should we use for the constant fountain mana regen?  Use -1 to keep the default dota behavior.
 FOUNTAIN_PERCENTAGE_MANA_REGEN = 6			-- What should we use for the percentage fountain mana regen?  Use -1 to keep the default dota behavior.
 FOUNTAIN_PERCENTAGE_HEALTH_REGEN = 6		-- What should we use for the percentage fountain health regen?  Use -1 to keep the default dota behavior.
-MAXIMUM_ATTACK_SPEED = 1200					-- What should we use for the maximum attack speed?
+MAXIMUM_ATTACK_SPEED = 1000					-- What should we use for the maximum attack speed?
 MINIMUM_ATTACK_SPEED = 0					-- What should we use for the minimum attack speed?
 DOTA_MAX_PLAYERS = 24						-- Maximum amount of players allowed in a game
 
@@ -220,11 +217,7 @@ if GetMapName() == "imba_1v1" then
 	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_BADGUYS]  = 1
 	IMBA_1V1_SCORE = 3
 	PRE_GAME_TIME = 30.0 + AP_GAME_TIME
-elseif GetMapName() == "imba_frantic_10v10" then
-	IMBA_PLAYERS_ON_GAME = 20
-	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_GOODGUYS] = 10
-	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_BADGUYS]  = 10
-elseif GetMapName() == "imba_ranked_10v10" then
+elseif GetMapName() == "imba_ranked_10v10" or GetMapName() == "imba_frantic_10v10"  or GetMapName() == "imba_mutation_10v10" then
 	IMBA_PLAYERS_ON_GAME = 20
 	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_GOODGUYS] = 10
 	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_BADGUYS]  = 10
@@ -314,74 +307,88 @@ IMBA_ALL_RANDOM_HERO_SELECTION_TIME = 5.0									-- Time we need to wait before
 
 -- Global Gold earning, values are doubled with Hyper for non-custom maps
 CUSTOM_GOLD_BONUS = {} -- 1 = Normal, 2 = Hyper
-CUSTOM_GOLD_BONUS["imba_ranked_5v5"] = {150, 150}
-CUSTOM_GOLD_BONUS["imba_ranked_10v10"] = {150, 150}
-CUSTOM_GOLD_BONUS["imba_frantic_5v5"] = {250, 250}
-CUSTOM_GOLD_BONUS["imba_frantic_10v10"] = {250, 250}
-CUSTOM_GOLD_BONUS["imba_overthrow"] = {100, 100}
-CUSTOM_GOLD_BONUS["imba_1v1"] = {100, 100}
-CUSTOM_GOLD_BONUS["imba_tournament"] = {150, 150}
+CUSTOM_GOLD_BONUS["imba_1v1"] = 300
+CUSTOM_GOLD_BONUS["imba_overthrow"] = 300
+CUSTOM_GOLD_BONUS["imba_ranked_5v5"] = 300
+CUSTOM_GOLD_BONUS["imba_ranked_10v10"] = 300
+CUSTOM_GOLD_BONUS["imba_tournament"] = 300
+CUSTOM_GOLD_BONUS["imba_mutation_5v5"] = 300
+CUSTOM_GOLD_BONUS["imba_mutation_10v10"] = 300
+CUSTOM_GOLD_BONUS["imba_frantic_5v5"] = 300
+CUSTOM_GOLD_BONUS["imba_frantic_10v10"] = 300
 
 -- Global XP earning, values are doubled with Hyper for non-custom maps (right now this is not used anymore, but i'll keep it there just in case)
 CUSTOM_XP_BONUS = {} -- 1 = Normal, 2 = Hyper
-CUSTOM_XP_BONUS["imba_ranked_5v5"] = {100, 100}
-CUSTOM_XP_BONUS["imba_ranked_10v10"] = {100, 100}
-CUSTOM_XP_BONUS["imba_frantic_5v5"] = {200, 200}
-CUSTOM_XP_BONUS["imba_frantic_10v10"] = {200, 200}
-CUSTOM_XP_BONUS["imba_overthrow"] = {100, 100}
-CUSTOM_XP_BONUS["imba_1v1"] = {100, 100}
-CUSTOM_XP_BONUS["imba_tournament"] = {100, 100}
+CUSTOM_XP_BONUS["imba_1v1"] = 225
+CUSTOM_XP_BONUS["imba_overthrow"] = 225
+CUSTOM_XP_BONUS["imba_ranked_5v5"] = 225
+CUSTOM_XP_BONUS["imba_ranked_10v10"] = 225
+CUSTOM_XP_BONUS["imba_tournament"] = 225
+CUSTOM_XP_BONUS["imba_mutation_5v5"] = 225
+CUSTOM_XP_BONUS["imba_mutation_10v10"] = 225
+CUSTOM_XP_BONUS["imba_frantic_5v5"] = 225
+CUSTOM_XP_BONUS["imba_frantic_10v10"] = 225
 
 -- Hero base level, values are doubled with Hyper for non-custom maps
 HERO_STARTING_LEVEL = {} -- 1 = Normal, 2 = Hyper
-HERO_STARTING_LEVEL["imba_ranked_5v5"] = {1, 1}
-HERO_STARTING_LEVEL["imba_ranked_10v10"] = {1, 1}
-HERO_STARTING_LEVEL["imba_frantic_5v5"] = {5, 5}
-HERO_STARTING_LEVEL["imba_frantic_10v10"] = {5, 5}
-HERO_STARTING_LEVEL["imba_overthrow"] = {1, 1}
-HERO_STARTING_LEVEL["imba_1v1"] = {1, 1}
-HERO_STARTING_LEVEL["imba_tournament"] = {1, 1}
+HERO_STARTING_LEVEL["imba_1v1"] = 1
+HERO_STARTING_LEVEL["imba_overthrow"] = 1
+HERO_STARTING_LEVEL["imba_ranked_5v5"] = 1
+HERO_STARTING_LEVEL["imba_ranked_10v10"] = 1
+HERO_STARTING_LEVEL["imba_tournament"] = 1
+HERO_STARTING_LEVEL["imba_mutation_5v5"] = 1
+HERO_STARTING_LEVEL["imba_mutation_10v10"] = 1
+HERO_STARTING_LEVEL["imba_frantic_5v5"] = 5
+HERO_STARTING_LEVEL["imba_frantic_10v10"] = 5
 
 MAX_LEVEL = {}
-MAX_LEVEL["imba_ranked_5v5"] = {42, 42}
-MAX_LEVEL["imba_ranked_10v10"] = {42, 42}
-MAX_LEVEL["imba_frantic_5v5"] = {42, 42}
-MAX_LEVEL["imba_frantic_10v10"] = {42, 42}
-MAX_LEVEL["imba_overthrow"] = {42, 42}
-MAX_LEVEL["imba_1v1"] = {42, 42}
-MAX_LEVEL["imba_tournament"] = {42, 42}
+MAX_LEVEL["imba_1v1"] = 42
+MAX_LEVEL["imba_overthrow"] = 42
+MAX_LEVEL["imba_ranked_5v5"] = 42
+MAX_LEVEL["imba_ranked_10v10"] = 42
+MAX_LEVEL["imba_tournament"] = 42
+MAX_LEVEL["imba_mutation_5v5"] = 42
+MAX_LEVEL["imba_mutation_10v10"] = 42
+MAX_LEVEL["imba_frantic_5v5"] = 42
+MAX_LEVEL["imba_frantic_10v10"] = 42
 
 HERO_INITIAL_GOLD = {}
-HERO_INITIAL_GOLD["imba_ranked_5v5"] = {1200, 1200}
-HERO_INITIAL_GOLD["imba_ranked_10v10"] = {1200, 1200}
-HERO_INITIAL_GOLD["imba_frantic_5v5"] = {4000, 4000}
-HERO_INITIAL_GOLD["imba_frantic_10v10"] = {4000, 4000}
-HERO_INITIAL_GOLD["imba_overthrow"] = {1200, 1200}
-HERO_INITIAL_GOLD["imba_1v1"] = {1200, 1200}
-HERO_INITIAL_GOLD["imba_tournament"] = {1200, 1200}
+HERO_INITIAL_GOLD["imba_1v1"] = 1200
+HERO_INITIAL_GOLD["imba_overthrow"] = 1200
+HERO_INITIAL_GOLD["imba_ranked_5v5"] = 1200
+HERO_INITIAL_GOLD["imba_ranked_10v10"] = 1200
+HERO_INITIAL_GOLD["imba_tournament"] = 1200
+HERO_INITIAL_GOLD["imba_mutation_5v5"] = 1200
+HERO_INITIAL_GOLD["imba_mutation_10v10"] = 1200
+HERO_INITIAL_GOLD["imba_frantic_5v5"] = 4000
+HERO_INITIAL_GOLD["imba_frantic_10v10"] = 4000
 
 GOLD_TICK_TIME = {}
+GOLD_TICK_TIME["imba_1v1"] = 0.6
+GOLD_TICK_TIME["imba_overthrow"] = 0.6
 GOLD_TICK_TIME["imba_ranked_5v5"] = 0.6
 GOLD_TICK_TIME["imba_ranked_10v10"] = 0.4
+GOLD_TICK_TIME["imba_tournament"] = 0.6
+GOLD_TICK_TIME["imba_mutation_5v5"] = 0.6
+GOLD_TICK_TIME["imba_mutation_10v10"] = 0.4
 GOLD_TICK_TIME["imba_frantic_5v5"] = 0.4
 GOLD_TICK_TIME["imba_frantic_10v10"] = 0.4
-GOLD_TICK_TIME["imba_overthrow"] = 0.6
-GOLD_TICK_TIME["imba_1v1"] = 0.6
-GOLD_TICK_TIME["imba_tournament"] = 0.6
 
 BANNED_ITEMS = {}
-BANNED_ITEMS["imba_ranked_5v5"] = {}
-BANNED_ITEMS["imba_ranked_10v10"] = {}
-BANNED_ITEMS["imba_frantic_5v5"] = {}
-BANNED_ITEMS["imba_frantic_10v10"] = {}
-BANNED_ITEMS["imba_overthrow"] = {}
-BANNED_ITEMS["imba_tournament"] = {}
 BANNED_ITEMS["imba_1v1"] = {
 	"item_imba_bottle",
 	"item_infused_raindrop",
 	"item_soul_ring",
 	"item_tome_of_knowledge",
 }
+BANNED_ITEMS["imba_overthrow"] = {}
+BANNED_ITEMS["imba_ranked_5v5"] = {}
+BANNED_ITEMS["imba_ranked_10v10"] = {}
+BANNED_ITEMS["imba_tournament"] = {}
+BANNED_ITEMS["imba_mutation_5v5"] = {}
+BANNED_ITEMS["imba_mutation_10v10"] = {}
+BANNED_ITEMS["imba_frantic_5v5"] = {}
+BANNED_ITEMS["imba_frantic_10v10"] = {}
 
 REMAINING_GOODGUYS = 0														-- Remaining players on Radiant
 REMAINING_BADGUYS = 0														-- Remaining players on Dire
@@ -491,8 +498,30 @@ IMBA_TESTBED_INITIALIZED = false
 PURGE_BUFF_LIST = LoadKeyValues("scripts/npc/KV/purge_buffs_list.kv")
 DISPELLABLE_DEBUFF_LIST = LoadKeyValues("scripts/npc/KV/dispellable_debuffs_list.kv")
 
+PLAYER_TEAM = {}
+
+DONATOR_STATUS = {}
+DONATOR_STATUS[1] = "IMBA Dev"
+DONATOR_STATUS[2] = "PRO DEVCUCK"
+DONATOR_STATUS[3] = "Administrator"
+DONATOR_STATUS[4] = "Ember Donator"
+DONATOR_STATUS[5] = "Golden Donator"
+DONATOR_STATUS[6] = "Donator"
+DONATOR_STATUS[7] = "Salamander Donator"
+DONATOR_STATUS[8] = "Icefrog Donator"
+
+DONATOR_COLOR = {}
+DONATOR_COLOR[1] = {160, 20, 20}
+DONATOR_COLOR[2] = {0, 204, 255}
+DONATOR_COLOR[3] = {160, 20, 20}
+DONATOR_COLOR[4] = {240, 50, 50}
+DONATOR_COLOR[5] = {218, 165, 32}
+DONATOR_COLOR[6] = {45, 200, 45}
+DONATOR_COLOR[7] = {47, 91, 151}
+DONATOR_COLOR[8] = {153, 51, 153}
+
 IMBA_INVISIBLE_MODIFIERS = {
-	"modifier_mirana_moonlight_shadow",
+	"modifier_imba_moonlight_shadow_invis",
 	"modifier_item_imba_shadow_blade_invis",
 	"modifier_imba_vendetta",
 	"modifier_nyx_assassin_burrow",
@@ -532,6 +561,7 @@ RESTRICT_FOUNTAIN_UNITS = {
 	"npc_dota_tusk_frozen_sigil2",
 	"npc_dota_tusk_frozen_sigil3",
 	"npc_dota_tusk_frozen_sigil4",
+	"imba_witch_doctor_death_ward",
 }
 
 MORPHLING_RESTRICTED_MODIFIERS = {
@@ -550,19 +580,38 @@ MORPHLING_RESTRICTED_MODIFIERS = {
 	"modifier_imba_tidebringer_cleave_hit_target",
 }
 
+SHARED_NODRAW_MODIFIERS = {
+	"modifier_item_shadow_amulet_fade",
+	"modifier_monkey_king_tree_dance_hidden",
+	"modifier_monkey_king_transform",
+	"modifier_pangolier_gyroshell",
+	"modifier_smoke_of_deceit",
+}
+
 IMBA_DONATOR_COMPANION = {}
-IMBA_DONATOR_COMPANION["76561198015161808"] = {0.8, "npc_imba_donator_companion_cookies"}
--- IMBA_DONATOR_COMPANION["76561193714760494"] = {0.81, "npc_imba_donator_companion_acalia"}
--- IMBA_DONATOR_COMPANION["76561193684594183"] = {0.9, "npc_imba_donator_companion_lily"}
+IMBA_DONATOR_COMPANION["76561198015161808"] = "npc_imba_donator_companion_cookies"
+IMBA_DONATOR_COMPANION["76561198094835750"] = "npc_imba_donator_companion_zonnoz"
+IMBA_DONATOR_COMPANION["76561198003571172"] = "npc_imba_donator_companion_baumi"
+IMBA_DONATOR_COMPANION["76561198014254115"] = "npc_imba_donator_companion_icefrog"
+IMBA_DONATOR_COMPANION["76561198014254115"] = "npc_imba_donator_companion_admiral_bulldog"
+IMBA_DONATOR_COMPANION["76561198021465788"] = "npc_imba_donator_companion_suthernfriend"
+IMBA_DONATOR_COMPANION["76561198073163389"] = "npc_imba_donator_companion_terdic"
+IMBA_DONATOR_COMPANION["76561197970766309"] = "npc_imba_donator_companion_hamahe"
+IMBA_DONATOR_COMPANION["76561193687456266"] = "npc_imba_donator_companion_exzas"
 
 IMBA_DONATOR_STATUE = {}
-IMBA_DONATOR_STATUE["76561198015161808"] = {1.75, "npc_imba_donator_statue_cookies"}
-IMBA_DONATOR_STATUE["76561193714760494"] = {0.81, "npc_imba_donator_statue_acalia"}
-IMBA_DONATOR_STATUE["76561193684594183"] = {0.9, "npc_imba_donator_statue_lily"}
-IMBA_DONATOR_STATUE["76561198021465788"] = {0.6, "npc_imba_donator_statue_suthernfriend"}
-IMBA_DONATOR_STATUE["76561193687456266"] = {0.9, "npc_imba_donator_statue_exzas"}
-
--- IMBA_DONATOR_STATUE[""] = {0.8, "models/creeps/neutral_creeps/n_creep_satyr_spawn_a/n_creep_satyr_spawn_a.vmdl"}
+IMBA_DONATOR_STATUE["76561198015161808"] = "npc_imba_donator_statue_cookies"
+IMBA_DONATOR_STATUE["76561193714760494"] = "npc_imba_donator_statue_acalia"
+IMBA_DONATOR_STATUE["76561193684594183"] = "npc_imba_donator_statue_lily"
+IMBA_DONATOR_STATUE["76561198021465788"] = "npc_imba_donator_statue_suthernfriend"
+IMBA_DONATOR_STATUE["76561193687456266"] = "npc_imba_donator_statue_exzas"
+IMBA_DONATOR_STATUE["76561198094835750"] = "npc_imba_donator_statue_zonnoz"
+-- IMBA_DONATOR_STATUE["76561198043254407"] = "npc_imba_donator_statue_tabisama"
+IMBA_DONATOR_STATUE["76561197980558838"] = "npc_imba_donator_statue_january0000"
+IMBA_DONATOR_STATUE["76561198073163389"] = "npc_imba_donator_statue_terdic"
+IMBA_DONATOR_STATUE["76561198077187165"] = "npc_imba_donator_statue_toc"
+IMBA_DONATOR_STATUE["76561198187809623"] = "npc_imba_donator_statue_oviakin"
+IMBA_DONATOR_STATUE["76561197970766309"] = "npc_imba_donator_statue_hamahe"
 
 UNIT_EQUIPMENT = {}
 UNIT_EQUIPMENT["models/heroes/crystal_maiden/crystal_maiden.vmdl"] = {
@@ -587,4 +636,34 @@ UNIT_EQUIPMENT["models/heroes/shredder/shredder.vmdl"] = {
 	"models/heroes/shredder/shredder_driver_hat.vmdl",
 	"models/heroes/shredder/shredder_hook.vmdl",
 	"models/heroes/shredder/shredder_shoulders.vmdl",
+}
+UNIT_EQUIPMENT["models/items/pudge/arcana/pudge_arcana_base.vmdl"] = {
+	"models/items/pudge/blackdeath_offhand/blackdeath_offhand.vmdl",
+	"models/items/pudge/blackdeath_head_s3/blackdeath_head_s3.vmdl",
+	"models/items/pudge/immortal_arm/immortal_arm.vmdl",
+	"models/items/pudge/scorching_talon/scorching_talon.vmdl",
+	"models/items/pudge/doomsday_ripper_belt/doomsday_ripper_belt.vmdl",
+	"models/items/pudge/pudge_deep_sea_abomination_arms/pudge_deep_sea_abomination_arms.vmdl",
+	"models/items/pudge/arcana/pudge_arcana_back.vmdl",
+}
+UNIT_EQUIPMENT["models/heroes/huskar/huskar.vmdl"] = {
+	"models/items/huskar/searing_dominator/searing_dominator.vmdl",
+	"models/heroes/huskar/huskar_bracer.vmdl",
+	"models/heroes/huskar/huskar_dagger.vmdl",
+	"models/heroes/huskar/huskar_shoulder.vmdl",
+	"models/heroes/huskar/huskar_spear.vmdl",
+}
+UNIT_EQUIPMENT["models/heroes/rubick/rubick.vmdl"] = {
+	"models/items/rubick/force_staff/force_staff.vmdl",
+	"models/items/rubick/kuroky_rubick_back/kuroky_rubick_back.vmdl",
+	"models/items/rubick/kuroky_rubick_shoulders/kuroky_rubick_shoulders.vmdl",
+	"models/items/rubick/kuroky_rubick_weapon/kuroky_rubick_weapon.vmdl",
+	"models/items/rubick/rubick_kuroky_head/rubick_kuroky_head.vmdl",
+}
+
+IMBA_DISABLED_SKULL_BASHER = {
+	"npc_dota_hero_faceless_void",
+	"npc_dota_hero_slardar",
+	"npc_dota_hero_spirit_breaker",
+	"npc_dota_hero_troll_warlord",
 }
