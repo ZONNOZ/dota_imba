@@ -49,12 +49,6 @@ function GameMode:_OnEntityKilled( keys )
 			GameRules:SetSafeToLeave( true )
 			GameRules:SetGameWinner( killerEntity:GetTeam() )
 		end
-
-		--PlayerResource:GetTeamKills
-		if SHOW_KILLS_ON_TOPBAR then
-			GameRules:GetGameModeEntity():SetTopBarTeamValue(DOTA_TEAM_BADGUYS, GetTeamHeroKills(DOTA_TEAM_BADGUYS))
-			GameRules:GetGameModeEntity():SetTopBarTeamValue(DOTA_TEAM_GOODGUYS, GetTeamHeroKills(DOTA_TEAM_GOODGUYS))
-		end
 	end
 end
 
@@ -88,7 +82,7 @@ function GameMode:OnPlayerChat(keys)
 	end
 
 	for str in string.gmatch(text, "%S+") do
-		if IsInToolsMode() or api.imba.is_developer(steamid) then
+		if IsInToolsMode() or GameRules:IsCheatMode() or api.imba.is_developer(steamid) then
 			if str == "-dev_remove_units" then
 				GameMode:RemoveUnits(true, true, true)
 			end

@@ -9,7 +9,7 @@ api.imba = {
 	data = {},
 	ready = false,
 	config = {
-		event_timer_interval = 2
+		event_timer_interval = 5
 	},
 	events = {
 		queue = {}
@@ -77,6 +77,7 @@ function api.imba.register(callback)
 			if callback ~= nil then
 				callback(false)
 			end
+
 			api.imba.ready = true
 
 			-- start events system

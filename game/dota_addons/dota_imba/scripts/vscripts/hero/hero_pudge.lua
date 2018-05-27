@@ -485,7 +485,7 @@ function imba_pudge_meat_hook:OnProjectileHit_ExtraData(hTarget, vLocation, Extr
 				SendOverheadEventMessage(nil, OVERHEAD_ALERT_DAMAGE, hTarget, actually_dmg, nil)
 				hTarget:AddNewModifier(self:GetCaster(), self, "modifier_imba_hook_target_enemy", {})
 
---				if HasPudgeArcana(self:GetCaster()) then -- error for reasons, maybe because target is dead
+				if HasPudgeArcana(self:GetCaster()) then -- error for reasons, maybe because target is dead
 					if hTarget:IsRealHero() then
 						self:GetCaster().successful_hooks = self:GetCaster().successful_hooks + 1
 					else
@@ -498,23 +498,24 @@ function imba_pudge_meat_hook:OnProjectileHit_ExtraData(hTarget, vLocation, Extr
 						if self:GetCaster().pudge_arcana == 1 then
 							pfx = "particles/econ/items/pudge/pudge_arcana/pudge_arcana_hook_streak.vpcf"
 						end
+
 						local hook_counter = ParticleManager:CreateParticle(pfx, PATTACH_OVERHEAD_FOLLOW, self:GetCaster())
 						local stack_10 = math.floor(self:GetCaster().successful_hooks / 10)
 						ParticleManager:SetParticleControl(hook_counter, 2, Vector(stack_10, self:GetCaster().successful_hooks - stack_10 * 10, self:GetCaster().successful_hooks))
 						ParticleManager:ReleaseParticleIndex(hook_counter)
 					end
---				end
+				end
 			elseif hTarget:GetTeamNumber() ~= self:GetCaster():GetTeamNumber() then
 				hTarget:AddNewModifier(self:GetCaster(), self, "modifier_imba_hook_target_ally", {})
 			else
---				if HasPudgeArcana(self:GetCaster()) then
+				if HasPudgeArcana(self:GetCaster()) then
 					self:GetCaster().successful_hooks = 0
---				end
+				end
 			end
 		else
---			if HasPudgeArcana(self:GetCaster()) then
+			if HasPudgeArcana(self:GetCaster()) then
 				self:GetCaster().successful_hooks = 0
---			end
+			end
 		end
 
 		local projectile_info = {
@@ -956,13 +957,17 @@ function modifier_imba_pudge_flesh_heap_handler:OnCreated()
 	if self:GetCaster():IsIllusion() then self:Destroy() return end
 
 	if IsServer() then
-		if self:GetCaster().pudge_arcana == nil then self:Destroy() return end
-		self:SetStackCount(self:GetCaster().pudge_arcana + 1)
+		if self:GetCaster().pudge_arcana == nil then
+			self:SetStackCount(0)
+		else
+			self:SetStackCount(self:GetCaster().pudge_arcana + 1)
+		end
 	end
 
 	if IsClient() then
-		if self:GetStackCount() == 0 then self:Destroy() return end
-		self:GetCaster().flesh_heap_icon = self:GetStackCount() - 1
+		if self:GetStackCount() ~= 0 then
+			self:GetCaster().flesh_heap_icon = self:GetStackCount() - 1
+		end
 	end
 end
 
@@ -1021,7 +1026,7 @@ function modifier_imba_flesh_heap_stacks:GetModifierModelScale()
 	local stacks = self:GetStackCount()
 	local max_stack = self:GetAbility():GetSpecialValueFor("max_stacks") + self:GetCaster():FindTalentValue("special_bonus_imba_pudge_4")
 	if stacks > max_stack then stacks = max_stack end
-	return stacks * 3
+	return stacks * 2
 end
 
 --=================================================================================================================
