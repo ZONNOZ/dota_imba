@@ -1,5 +1,3 @@
-LinkLuaModifier("modifier_out_of_duel", "modifiers/modifier_out_of_duel.lua", LUA_MODIFIER_MOTION_NONE)
-
 if HeroSelection == nil then
 	require('libraries/event')
 	require('libraries/fun')()
@@ -148,7 +146,6 @@ end
 
 -- start heropick CM timer
 function HeroSelection:CMManager(event)
-
 	if forcestop == false then
 		forcestop = true
 
@@ -366,7 +363,19 @@ function HeroSelection:SelectHero(playerId, hero)
 			LoadFinishEvent.broadcast()
 			print("UNPAUSE GAME!")
 --			PauseGame(false)
+			if IsMutationMap() then
+				GameRules:GetGameModeEntity():SetPauseEnabled( true )
+--				CustomGameEventManager:Send_ServerToPlayer(PlayerResource:GetPlayer(playerId), "send_mutations", IMBA_MUTATION) -- doesn't work for some players
+				CustomGameEventManager:Send_ServerToAllClients("send_mutations", IMBA_MUTATION)
+			elseif GetMapName() == "cavern" then
+				CustomGameEventManager:Send_ServerToAllClients("show_cavern_tutorial", {})
+			end
 			GameRules:GetGameModeEntity():SetCameraDistanceOverride(1134) -- default: 1134
+
+			if BOTS_ENABLED == true then
+				SendToServerConsole('sm_gmode 1')
+				SendToServerConsole('dota_bot_populate')
+			end
 		end
 
 		local player = PlayerResource:GetPlayer(playerId)
@@ -428,7 +437,8 @@ function HeroSelection:GiveStartingHero(playerId, heroName, dev)
 	hero.killstreak = 0
 
 	-- Set up initial level
-	local starting_level = tonumber(CustomNetTables:GetTableValue("game_options", "initial_level")["1"]) or 1
+	local starting_level = tonumber(CustomNetTables:GetTableValue("game_options", "initial_level")["1"])
+	if starting_level == nil then starting_level = 1 end
 	if starting_level and starting_level > 1 then
 		hero:AddExperience(XP_PER_LEVEL_TABLE[starting_level], DOTA_ModifyXP_CreepKill, false, true)
 	end

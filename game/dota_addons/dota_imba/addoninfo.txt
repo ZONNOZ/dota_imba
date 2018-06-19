@@ -13,10 +13,7 @@
 	"HeroGuidesSupported"			"1"
 	"PenaltiesEnabled"				"1"
 
-	"maps"							"imba_ranked_5v5 imba_ranked_10v10 imba_frantic_5v5 imba_frantic_10v10 imba_1v1"
-
-	// IMBASHAKA
-//	"maps"							"imba_mutation_5v5 imba_tournament"
+	"maps"							"cavern imba_ranked_5v5 imba_ranked_10v10 imba_mutation_5v5 imba_mutation_10v10"
 
 	"IsPlayable"					"1"
 
@@ -50,6 +47,11 @@
 		"MaxPlayers"				"20"
 	}
 
+	"imba_mutation_10v10"
+	{
+		"MaxPlayers"				"20"
+	}
+
 	"imba_tournament"
 	{
 		"MaxPlayers"				"10"
@@ -59,4 +61,9 @@
 //	{
 //		"MaxPlayers"				"24"
 //	}
+
+	"cavern"
+	{
+		"MaxPlayers"				"24"
+	}
 }

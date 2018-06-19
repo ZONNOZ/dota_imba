@@ -47,11 +47,7 @@ game/dota_addons/dota_imba/rich_presence_persistent_data\.txt
 
 game/dota_addons/dota_imba/server_log\.txt
 
-#Server Auth Key
-game/dota_addons/dota_imba/scripts/vscripts/server/auth.kv
-
-#Stat-Collection Shema Key
-game/dota_addons/dota_imba/scripts/vscripts/statcollection/settings.kv
+scripts/*
 
 # Roshan
 content/dota_addons/dota_imba/models/rosh*
@@ -61,3 +57,5 @@ game/dota_addons/dota_imba/models/rosh*
 .project
 .settings
 .DS_Store
+content/dota_addons/dota_imba/maps/touhou.vmap
+.idea

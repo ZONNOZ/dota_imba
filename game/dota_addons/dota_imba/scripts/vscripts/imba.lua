@@ -133,11 +133,12 @@ function GameMode:OnFirstPlayerLoaded()
 			}
 		end
 		GameMode:CustomSpawnCamps()
+	elseif GetMapName() == "cavern" then
 	else
-		GoodCamera = Entities:FindByName(nil, "dota_goodguys_fort")
-		BadCamera = Entities:FindByName(nil, "dota_badguys_fort")
---		GoodCamera = Entities:FindByName(nil, "good_healer_6")
---		BadCamera = Entities:FindByName(nil, "bad_healer_6")
+--		GoodCamera = Entities:FindByName(nil, "dota_goodguys_fort")
+--		BadCamera = Entities:FindByName(nil, "dota_badguys_fort")
+		GoodCamera = Entities:FindByName(nil, "good_healer_6")
+		BadCamera = Entities:FindByName(nil, "bad_healer_6")
 
 		ROSHAN_SPAWN_LOC = Entities:FindByClassname(nil, "npc_dota_roshan_spawner"):GetAbsOrigin()
 		Entities:FindByClassname(nil, "npc_dota_roshan_spawner"):RemoveSelf()
@@ -149,10 +150,15 @@ function GameMode:OnFirstPlayerLoaded()
 	-------------------------------------------------------------------------------------------------
 	-- IMBA: Pre-pick forced hero selection
 	-------------------------------------------------------------------------------------------------
-	flItemExpireTime = 60.0
-	GameRules:SetSameHeroSelectionEnabled(true)
-	GameRules:GetGameModeEntity():SetCustomGameForceHero(FORCE_PICKED_HERO)
-	GameRules:GetGameModeEntity():SetCameraDistanceOverride(500) -- default: 1134
+	if GetMapName() == "cavern" then
+		CCavern:SetupCavernRules()
+	else
+		flItemExpireTime = 60.0
+		GameRules:SetSameHeroSelectionEnabled(true)
+		GameRules:GetGameModeEntity():SetCameraDistanceOverride(500) -- default: 1134
+	end
+
+	GameRules:GetGameModeEntity():SetPauseEnabled( false )
 
 	-------------------------------------------------------------------------------------------------
 	-- IMBA: Contributor models
@@ -301,9 +307,9 @@ function GameMode:ExperienceFilter( keys )
 	end
 
 	-- Losing team gets huge EXP bonus.
-	--	if hero and CustomNetTables:GetTableValue("gamerules", "losing_team") then
-	--		if CustomNetTables:GetTableValue("gamerules", "losing_team").losing_team then
-	--			local losing_team = CustomNetTables:GetTableValue("gamerules", "losing_team").losing_team
+	--	if hero and CustomNetTables:GetTableValue("game_options", "losing_team") then
+	--		if CustomNetTables:GetTableValue("game_options", "losing_team").losing_team then
+	--			local losing_team = CustomNetTables:GetTableValue("game_options", "losing_team").losing_team
 
 	--			if hero:GetTeamNumber() == losing_team then
 	--				keys.experience = keys.experience * (1 + COMEBACK_EXP_BONUS * 0.01)
@@ -399,18 +405,6 @@ function GameMode:ModifierFilter( keys )
 		end
 
 		-------------------------------------------------------------------------------------------------
-		-- Frantic mode duration adjustment
-		-------------------------------------------------------------------------------------------------
-		--		if modifier_name == "modifier_imba_doom_bringer_doom" then
-		--			if IMBA_FRANTIC_MODE_ON then
-		--				local original_duration = keys.duration
-		--				local actually_duration = original_duration
-		--				actually_duration = actually_duration / (100/IMBA_FRANTIC_VALUE)
-		--				keys.duration = actually_duration
-		--			end
-		--		end
-
-		-------------------------------------------------------------------------------------------------
 		-- Silencer Arcane Supremacy silence duration reduction
 		-------------------------------------------------------------------------------------------------
 		if modifier_owner:HasModifier("modifier_imba_silencer_arcane_supremacy") then
@@ -466,6 +460,7 @@ function GameMode:ModifierFilter( keys )
 
 		-- disarm immune
 		local jarnbjorn_immunity = {
+			"modifier_disarmed",
 			"modifier_item_imba_triumvirate_proc_debuff",
 			"modifier_item_imba_sange_kaya_proc",
 			"modifier_item_imba_sange_yasha_disarm",
@@ -545,7 +540,7 @@ function GameMode:ItemAddedFilter( keys )
 
 			-- Destroy the item
 			return false
-				-- If this is not a player, do nothing and drop another Aegis
+		-- If this is not a player, do nothing and drop another Aegis
 		else
 			local drop = CreateItem("item_imba_aegis", nil, nil)
 			CreateItemOnPositionSync(unit:GetAbsOrigin(), drop)
@@ -1257,27 +1252,11 @@ function GameMode:OnGameInProgress()
 	local towers = Entities:FindAllByClassname("npc_dota_tower")
 
 	for _, tower in pairs(towers) do
-		for _, ability in pairs(TOWER_ABILITIES["tower1"]) do
-			if string.find(tower:GetUnitName(), "tower1") then
-				tower:AddAbility(ability):SetLevel(1)
-			end
-		end
-
-		for _, ability in pairs(TOWER_ABILITIES["tower2"]) do
-			if string.find(tower:GetUnitName(), "tower2") then
-				tower:AddAbility(ability):SetLevel(1)
-			end
-		end
-
-		for _, ability in pairs(TOWER_ABILITIES["tower3"]) do
-			if string.find(tower:GetUnitName(), "tower3") then
-				tower:AddAbility(ability):SetLevel(1)
-			end
-		end
-
-		for _, ability in pairs(TOWER_ABILITIES["tower4"]) do
-			if string.find(tower:GetUnitName(), "tower4") then
-				tower:AddAbility(ability):SetLevel(1)
+		for i = 1, 4 do
+			for _, ability in pairs(TOWER_ABILITIES["tower"..i]) do
+				if string.find(tower:GetUnitName(), "tower"..i) then
+					tower:AddAbility(ability):SetLevel(1)
+				end
 			end
 		end
 	end
@@ -1834,21 +1813,23 @@ function GameMode:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME or GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		if IsMutationMap() then
 			Mutation:OnThink()
+		elseif GetMapName() == "cavern" then
+			CCavern:OnThink()
 		end
 	end
 
 	for _, hero in pairs(HeroList:GetAllHeroes()) do
 		-- Make courier controllable, repeat every second to avoid uncontrollable issues
---		if COURIER_PLAYER then
---			if COURIER_PLAYER[hero:GetPlayerID()] and not COURIER_PLAYER[hero:GetPlayerID()]:IsControllableByAnyPlayer() then
---				COURIER_PLAYER[hero:GetPlayerID()]:SetControllableByPlayer(hero:GetPlayerID(), true)
---				COURIER_PLAYER[hero:GetPlayerID()].owner_id = hero:GetPlayerID()
---			end
---		end
-
 		if COURIER_TEAM then
 			if COURIER_TEAM[hero:GetTeamNumber()] and not COURIER_TEAM[hero:GetTeamNumber()]:IsControllableByAnyPlayer() then
 				COURIER_TEAM[hero:GetTeamNumber()]:SetControllableByPlayer(hero:GetPlayerID(), true)
+			end
+		end
+
+		if COURIER_PLAYER then
+			if COURIER_PLAYER[hero:GetPlayerID()] and not COURIER_PLAYER[hero:GetPlayerID()]:IsControllableByAnyPlayer() then
+				COURIER_PLAYER[hero:GetPlayerID()]:SetControllableByPlayer(hero:GetPlayerID(), true)
+				COURIER_PLAYER[hero:GetPlayerID()].owner_id = hero:GetPlayerID()
 			end
 		end
 
@@ -1930,6 +1911,7 @@ function GameMode:OnThink()
 				CustomGameEventManager:Send_ServerToAllClients( "overtime_alert", broadcast_killcount )
 			end
 		end
+	elseif GetMapName() == "cavern" then
 	else
 		-- fix for super high respawn time
 		for _, hero in pairs(HeroList:GetAllHeroes()) do
@@ -1998,9 +1980,6 @@ function GameMode:OnThink()
 		end
 	end
 
-	-- Picking Screen voice alert
-	if GetMapName() == "imba_tournament" then return 1 end
-
 	if i == nil then i = AP_GAME_TIME -1
 	elseif i < 0 then
 		if PICKING_SCREEN_OVER == false then
@@ -2008,7 +1987,11 @@ function GameMode:OnThink()
 		end
 
 		return 1
+	else
+		i = i - 1
 	end
+
+--	print("i = "..i)
 
 	return 1
 end

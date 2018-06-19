@@ -2,13 +2,11 @@
 	<styles>
 		<include src="file://{resources}/styles/dotastyles.vcss_c" />
 		<include src="file://{resources}/styles/custom_game/imba_imr.css" />
-		<include src="file://{resources}/styles/custom_game/modules/picking_player.css" />
 	</styles>
 
 	<scripts>
 		<include src="file://{resources}/scripts/custom_game/util.js" />
 		<include src="file://{resources}/scripts/custom_game/imba_imr.js" />
-		<include src="file://{resources}/scripts/custom_game/Modular.js" />
 	</scripts>
 
 	<Panel class="Battlepass" hittest="false">
@@ -51,14 +49,12 @@
 					<Panel class="GameModeLabelPanel">
 						<Label class="ImbaGameInfoLabel" text="#imba_gamemode_settings_initial_gold" />
 						<Label class="ImbaGameInfoLabel" text="#imba_gamemode_settings_initial_level" />
-						<Label class="ImbaGameInfoLabel" text="#imba_gamemode_game_options_frantic" />
 						<Label class="ImbaGameInfoLabel" text="#imba_gamemode_settings_gold_tick" />
 					</Panel>
 
 					<Panel class="GameModeValuePanel">
 						<Label id="InitialGoldValue" class="ImbaGameInfoLabel" text="0" />
 						<Label id="InitialLevelValue" class="ImbaGameInfoLabel" text="0" />
-						<Label id="FranticModeValue" class="ImbaGameInfoLabel" text="0" />
 						<Label id="GoldTickValue" class="ImbaGameInfoLabel" text="0" />
 					</Panel>
 				</Panel>

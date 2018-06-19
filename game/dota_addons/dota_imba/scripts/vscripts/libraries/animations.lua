@@ -5,7 +5,7 @@ ANIMATIONS_VERSION = "0.80"
 
 	Installation
 	-"require" this file inside your code in order to gain access to the StartAnmiation and EndAnimation global.
-	-Additionally, ensure that this file is placed in the vscripts/libraries path and that the vscripts/libraries/modifiers/modifier_animation.lua and modifier_animiation_translate.lua files exist and are in the correct path
+	-Additionally, ensure that this file is placed in the vscripts/libraries path and that the vscripts/libraries/components/cavern/modifiers/modifier_animation.lua and modifier_animiation_translate.lua files exist and are in the correct path
 
 	Usage
 	-Animations can be started for any unit and are provided as a table of information to the StartAnimation call
@@ -398,6 +398,13 @@ local _ANIMATION_TRANSLATE_TO_CODE = {
 	wolfhound= 266,
 	wraith_spin= 33,
 	wrath= 212,
+	level1=348,
+    level2=349,
+    level3=350,
+    level4=351,
+    level5=352,
+    level6=353,
+    showcase=354,
 }
 
 local DoAnimation = function()
