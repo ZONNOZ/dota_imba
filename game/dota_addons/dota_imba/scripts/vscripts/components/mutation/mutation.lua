@@ -7,36 +7,50 @@ local MAP_SIZE = 15000
 function Mutation:Init()
 --	print("Mutation: Initialize...")
 
-	LinkLuaModifier("modifier_mutation_death_explosion", "modifier/mutation/modifier_mutation_death_explosion.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_kill_streak_power", "modifier/mutation/modifier_mutation_kill_streak_power.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_death_explosion", "components/mutation/modifiers/modifier_mutation_death_explosion.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_kill_streak_power", "components/mutation/modifiers/modifier_mutation_kill_streak_power.lua", LUA_MODIFIER_MOTION_NONE )
 	LinkLuaModifier("modifier_frantic", "modifier/modifier_frantic.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_no_health_bar", "modifier/mutation/modifier_no_health_bar.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_shadow_dance", "modifier/mutation/modifier_mutation_shadow_dance.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_ants", "modifier/mutation/modifier_mutation_ants.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_disable_healing", "modifier/mutation/modifier_disable_healing.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_no_health_bar", "components/mutation/modifiers/modifier_no_health_bar.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_shadow_dance", "components/mutation/modifiers/modifier_mutation_shadow_dance.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_ants", "components/mutation/modifiers/modifier_mutation_ants.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_disable_healing", "components/mutation/modifiers/modifier_disable_healing.lua", LUA_MODIFIER_MOTION_NONE )
 
-	LinkLuaModifier("modifier_mutation_sun_strike", "modifier/mutation/periodic_spellcast/modifier_mutation_sun_strike.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_thundergods_wrath", "modifier/mutation/periodic_spellcast/modifier_mutation_thundergods_wrath.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_track", "modifier/mutation/periodic_spellcast/modifier_mutation_track.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_rupture", "modifier/mutation/periodic_spellcast/modifier_mutation_rupture.lua", LUA_MODIFIER_MOTION_NONE )
-	LinkLuaModifier("modifier_mutation_torrent", "modifier/mutation/periodic_spellcast/modifier_mutation_torrent.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_sun_strike", "components/mutation/modifiers/periodic_spellcast/modifier_mutation_sun_strike.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_thundergods_wrath", "components/mutation/modifiers/periodic_spellcast/modifier_mutation_thundergods_wrath.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_track", "components/mutation/modifiers/periodic_spellcast/modifier_mutation_track.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_rupture", "components/mutation/modifiers/periodic_spellcast/modifier_mutation_rupture.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_torrent", "components/mutation/modifiers/periodic_spellcast/modifier_mutation_torrent.lua", LUA_MODIFIER_MOTION_NONE )
+	LinkLuaModifier("modifier_mutation_cold_feet", "components/mutation/modifiers/periodic_spellcast/modifier_mutation_cold_feet.lua", LUA_MODIFIER_MOTION_NONE )
 
---	Mutation:ChooseMutation("positive", POSITIVE_MUTATION_LIST, 15 - 1) -- -1 because index is 0
---	Mutation:ChooseMutation("negative", NEGATIVE_MUTATION_LIST, 10 - 1)
---	Mutation:ChooseMutation("terrain", TERRAIN_MUTATION_LIST, 11 - 1)
-
-	Mutation:ChooseMutation("positive", POSITIVE_MUTATION_LIST, 5 - 1) -- -1 because index is 0
-	Mutation:ChooseMutation("negative", NEGATIVE_MUTATION_LIST, 5 - 1)
+	Mutation:ChooseMutation("positive", POSITIVE_MUTATION_LIST, 6 - 1) -- -1 because index is 0
+	Mutation:ChooseMutation("negative", NEGATIVE_MUTATION_LIST, 3 - 1)
 	Mutation:ChooseMutation("terrain", TERRAIN_MUTATION_LIST, 4 - 1)
 
 	IMBA_MUTATION_PERIODIC_SPELLS = {}
-	IMBA_MUTATION_PERIODIC_SPELLS[1] = {"sun_strike", "Sunstrike", "Red"}
-	IMBA_MUTATION_PERIODIC_SPELLS[2] = {"thundergods_wrath", "Thundergod's Wrath", "Red"}
-	IMBA_MUTATION_PERIODIC_SPELLS[3] = {"track", "Track", "Red"}
-	IMBA_MUTATION_PERIODIC_SPELLS[4] = {"rupture", "Rupture", "Red"}
-	IMBA_MUTATION_PERIODIC_SPELLS[5] = {"torrent", "Torrent", "Red"}
+	IMBA_MUTATION_PERIODIC_SPELLS[1] = {"sun_strike", "Sunstrike", "Red", -1}
+	IMBA_MUTATION_PERIODIC_SPELLS[2] = {"thundergods_wrath", "Thundergod's Wrath", "Red", -1}
+	IMBA_MUTATION_PERIODIC_SPELLS[3] = {"track", "Track", "Red", 20.0}
+	IMBA_MUTATION_PERIODIC_SPELLS[4] = {"rupture", "Rupture", "Red", 10.0}
+	IMBA_MUTATION_PERIODIC_SPELLS[5] = {"torrent", "Torrent", "Red", -1}
+	IMBA_MUTATION_PERIODIC_SPELLS[6] = {"cold_feet", "Cold Feet", "Red", 4.0}
 
---	"cold_feet",
+	self.restricted_items = {
+		"item_imba_ironleaf_boots",
+		"item_imba_travel_boots",
+		"item_imba_travel_boots_2",
+		"item_big_cheese_cavern",
+		"item_potion_of_cowardice",
+		"item_cavern_dynamite",
+		"item_book_of_intelligence",
+		"item_book_of_agility",
+		"item_book_of_strength",
+		"item_deployable_shop",
+	}
+
+	self.item_spawn_delay = 10
+	self.item_spawn_vision_linger = 10
+	self.item_spawn_radius = 300
+
 --	"telekinesis",
 --	"glimpse",
 --	"torrent",
@@ -61,9 +75,9 @@ function Mutation:ChooseMutation(type, table, count)
 			table[mutation] = true
 
 			if IsInToolsMode() then
---				IMBA_MUTATION["positive"] = "killstreak_power"
-				IMBA_MUTATION["negative"] = "periodic_spellcast"
---				IMBA_MUTATION["terrain"] = "gift_exchange"
+				IMBA_MUTATION["positive"] = "super_blink"
+				IMBA_MUTATION["negative"] = "death_explosion"
+				IMBA_MUTATION["gift_exchange"] = "fast_runes"
 			end
 
 			return
@@ -90,39 +104,26 @@ function Mutation:OnGameRulesStateChange(keys)
 			RUNE_SPAWN_TIME = 30.0
 			BOUNTY_RUNE_SPAWN_TIME = 60.0
 		end
-
-		Timers:CreateTimer(3.0, function()
-			CustomGameEventManager:Send_ServerToAllClients("send_mutations", IMBA_MUTATION)
-		end)
 	elseif GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		if IMBA_MUTATION["negative"] == "periodic_spellcast" then
 			local random_int = RandomInt(1, #IMBA_MUTATION_PERIODIC_SPELLS)
-			local caster = Entities:FindByName(nil, "dota_badguys_fort")
 
 			Timers:CreateTimer(55.0, function()
 				random_int = RandomInt(1, #IMBA_MUTATION_PERIODIC_SPELLS)
-				Notifications:TopToAll({text = IMBA_MUTATION_PERIODIC_SPELLS[random_int][2].." Mutation in 5 seconds...", duration = 5.0, {color = IMBA_MUTATION_PERIODIC_SPELLS[random_int][3]}})
+				Notifications:TopToAll({text = IMBA_MUTATION_PERIODIC_SPELLS[random_int][2].." Mutation in 5 seconds...", duration = 5.0, style = {color = IMBA_MUTATION_PERIODIC_SPELLS[random_int][3]}})
 
 				return 60.0
 			end)
 
 			Timers:CreateTimer(function()
 				for _, hero in pairs(HeroList:GetAllHeroes()) do
+					local caster = Entities:FindByName(nil, "dota_badguys_fort")
+
 					if hero:GetTeamNumber() == 3 then
 						caster = Entities:FindByName(nil, "dota_goodguys_fort")
 					end
 
-					if IMBA_MUTATION_PERIODIC_SPELLS[random_int][1] == "sun_strike" then
-						hero:AddNewModifier(caster, nil, "modifier_mutation_sun_strike", {duration=20.0})
-					elseif IMBA_MUTATION_PERIODIC_SPELLS[random_int][1] == "thundergods_wrath" then
-						hero:AddNewModifier(caster, nil, "modifier_mutation_thundergods_wrath", {duration=2.0})
-					elseif IMBA_MUTATION_PERIODIC_SPELLS[random_int][1] == "track" then
-						hero:AddNewModifier(caster, nil, "modifier_mutation_track", {duration=20.0})
-					elseif IMBA_MUTATION_PERIODIC_SPELLS[random_int][1] == "rupture" then
-						hero:AddNewModifier(caster, nil, "modifier_mutation_rupture", {duration=10.0})
-					elseif IMBA_MUTATION_PERIODIC_SPELLS[random_int][1] == "torrent" then
-						hero:AddNewModifier(caster, nil, "modifier_mutation_torrent", {duration=50.0})
-					end
+					hero:AddNewModifier(caster, caster, "modifier_mutation_"..IMBA_MUTATION_PERIODIC_SPELLS[random_int][1], {duration=IMBA_MUTATION_PERIODIC_SPELLS[random_int][4]})
 				end
 
 				return 60.0
@@ -130,10 +131,10 @@ function Mutation:OnGameRulesStateChange(keys)
 		end
 
 		if IMBA_MUTATION["terrain"] == "gift_exchange" then
-			Timers:CreateTimer(60.0 + RandomInt(1, 60), function()
+			Timers:CreateTimer(110.0, function()
 				Mutation:SpawnRandomItem()
 
-				return 60.0 + RandomInt(1, 60)
+				return 120.0
 			end)
 		end
 
@@ -184,8 +185,12 @@ function Mutation:OnHeroFirstSpawn(hero)
 		hero:AddNewModifier(hero, nil, "modifier_mutation_kill_streak_power", {})
 	elseif IMBA_MUTATION["positive"] == "frantic" then
 		hero:AddNewModifier(hero, nil, "modifier_frantic", {})
-	elseif IMBA_MUTATION["positive"] == "jump_start" then
-		hero:AddExperience(XP_PER_LEVEL_TABLE[6], DOTA_ModifyXP_CreepKill, false, true)
+--	elseif IMBA_MUTATION["positive"] == "jump_start" then
+--		hero:AddExperience(XP_PER_LEVEL_TABLE[6], DOTA_ModifyXP_CreepKill, false, true)
+	elseif IMBA_MUTATION["positive"] == "super_blink" then
+		hero:AddItemByName("item_imba_blink")
+	elseif IMBA_MUTATION["positive"] == "pocket_tower" then
+		hero:AddItemByName("item_pocket_tower")
 	end
 
 	if IMBA_MUTATION["negative"] == "death_explosion" then
@@ -211,6 +216,12 @@ function Mutation:OnHeroSpawn(hero)
 	if IMBA_MUTATION["terrain"] == "sleepy_river" then
 		hero:AddNewModifier(hero, nil, "modifier_river", {})
 	end
+
+	if hero.tombstone_fx then
+		ParticleManager:DestroyParticle(hero.tombstone_fx, false)
+		ParticleManager:ReleaseParticleIndex(hero.tombstone_fx)
+		hero.tombstone_fx = nil
+	end
 end
 
 function Mutation:OnHeroDeath(hero)
@@ -225,21 +236,22 @@ function Mutation:OnHeroDeath(hero)
 		tombstone:SetContainedItem(newItem)
 		tombstone:SetAngles(0, RandomFloat(0, 360), 0)
 		FindClearSpaceForUnit(tombstone, hero:GetAbsOrigin(), true)
+
+		hero.tombstone_fx = ParticleManager:CreateParticle("particles/units/heroes/hero_abaddon/holdout_borrowed_time_"..hero:GetTeamNumber()..".vpcf", PATTACH_ABSORIGIN_FOLLOW, tombstone)
 	end
 
-	if IMBA_MUTATION["negative"] == "death_gold_drop" then
-		local game_time = math.min(GameRules:GetDOTATime(false, false) / 60, 30)
-		local random_int = RandomInt(30, 60)
-		local newItem = CreateItem("item_bag_of_gold", nil, nil)
-		newItem:SetPurchaseTime(0)
-		print(game_time, random_int)
-		newItem:SetCurrentCharges(random_int * game_time)
+--	if IMBA_MUTATION["negative"] == "death_gold_drop" then
+--		local game_time = math.min(GameRules:GetDOTATime(false, false) / 60, 30)
+--		local random_int = RandomInt(30, 60)
+--		local newItem = CreateItem("item_bag_of_gold", nil, nil)
+--		newItem:SetPurchaseTime(0)
+--		newItem:SetCurrentCharges(random_int * game_time)
 
-		local drop = CreateItemOnPositionSync(hero:GetAbsOrigin(), newItem)
-		local dropTarget = hero:GetAbsOrigin() + RandomVector(RandomFloat( 50, 150 ))
-		newItem:LaunchLoot(true, 300, 0.75, dropTarget)
-		EmitSoundOn("Dungeon.TreasureItemDrop", hero)
-	end
+--		local drop = CreateItemOnPositionSync(hero:GetAbsOrigin(), newItem)
+--		local dropTarget = hero:GetAbsOrigin() + RandomVector(RandomFloat( 50, 150 ))
+--		newItem:LaunchLoot(true, 300, 0.75, dropTarget)
+--		EmitSoundOn("Dungeon.TreasureItemDrop", hero)
+--	end
 end
 
 function Mutation:ModifierFilter(keys)
@@ -277,25 +289,48 @@ function Mutation:SpawnRandomItem()
 --			print("Map max bounds:", MAP_SIZE / 2.3)
 			print(random_int, k, v["ItemCost"])
 
+			for _, item in pairs(self.restricted_items) do
+				if k == item then
+					return Mutation:SpawnRandomItem()
+				end
+			end
+
 			if v["ItemCost"] then
-				if v["ItemCost"] < 1000 or string.find(k, "recipe") then
+				if v["ItemCost"] < 1000 or v["ItemCost"] == 99999 or string.find(k, "recipe") then
 					return Mutation:SpawnRandomItem()
 				end
 			else
 				return Mutation:SpawnRandomItem()
 			end
 
-			local item = CreateItem(k, nil, nil)
-			item:SetSellable(false)
 			local pos = Vector(RandomInt(1000, MAP_SIZE / 2.3), RandomInt(1000, MAP_SIZE / 2.3), 0)
-			print("Item Name:", k, pos)
+			AddFOWViewer(2, pos, self.item_spawn_radius, self.item_spawn_delay + self.item_spawn_vision_linger, false)
+			AddFOWViewer(3, pos, self.item_spawn_radius, self.item_spawn_delay + self.item_spawn_vision_linger, false)
+			GridNav:DestroyTreesAroundPoint(pos, self.item_spawn_radius, false)
 
-			GridNav:DestroyTreesAroundPoint(pos, 80, false)
-			local drop = CreateItemOnPositionSync(pos, item)
---			EmitSoundOn("Dungeon.TreasureItemDrop", hero)
+			local particle_dummy = CreateUnitByName("npc_dummy_unit", pos, true, nil, nil, 6)
+			local particle_arena_fx = ParticleManager:CreateParticle("particles/hero/centaur/centaur_hoof_stomp_arena.vpcf", PATTACH_ABSORIGIN_FOLLOW, particle_dummy)
+			ParticleManager:SetParticleControl(particle_arena_fx, 0, pos)
+			ParticleManager:SetParticleControl(particle_arena_fx, 1, Vector(self.item_spawn_radius + 45, 1, 1))
 
-			AddFOWViewer(2, pos, 250, 20.0, false)
-			AddFOWViewer(3, pos, 250, 20.0, false)
+			local particle = ParticleManager:CreateParticle("particles/items_fx/aegis_respawn_timer.vpcf", PATTACH_ABSORIGIN_FOLLOW, particle_dummy)
+			ParticleManager:SetParticleControl(particle, 1, Vector(self.item_spawn_delay, 0, 0))
+			ParticleManager:SetParticleControl(particle, 3, pos)
+			ParticleManager:ReleaseParticleIndex(particle)
+
+			Timers:CreateTimer(self.item_spawn_delay, function()
+				local item = CreateItem(k, nil, nil)
+				item:SetSellable(false)
+				print("Item Name:", k, pos)
+
+				local drop = CreateItemOnPositionSync(pos, item)
+--				EmitSoundOn("Dungeon.TreasureItemDrop", hero)
+
+				ParticleManager:DestroyParticle(particle_arena_fx, false)
+				ParticleManager:ReleaseParticleIndex(particle_arena_fx)
+
+				particle_dummy:ForceKill(false)
+			end)
 
 			CustomGameEventManager:Send_ServerToAllClients("item_will_spawn", {spawn_location = pos})
 			EmitGlobalSound("powerup_03")

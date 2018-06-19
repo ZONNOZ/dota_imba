@@ -2,10 +2,8 @@
 {
 	custom_net_tables =
 	[
-		"talents",
 		"game_options",
 		"player_table",
-		"gamerules",
 		"shared_unit_control",
 		"imba_talent_manager",
 		"netgraph",
@@ -14,5 +12,7 @@
 		"game_state",
 		"hero_selection",
 		"battlepass",
+		"rosh_tracker",
+		"eliminated_players",
 	]
 }

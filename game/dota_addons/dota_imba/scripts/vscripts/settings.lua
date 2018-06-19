@@ -23,6 +23,7 @@
 -- Barebones basics
 -------------------------------------------------------------------------------------------------
 
+USE_TEAM_COURIER = true
 PICKING_SCREEN_OVER = false
 ENABLE_HERO_RESPAWN = true					-- Should the heroes automatically respawn on a timer or stay dead until manually respawned
 UNIVERSAL_SHOP_MODE = false					-- Should the main shop contain Secret Shop items as well as regular items
@@ -37,8 +38,12 @@ CAPTAINS_MODE_PICK_BAN_TIME = 30          -- how long you have to do each pick/b
 CAPTAINS_MODE_HERO_PICK_TIME = 30         -- time to choose which hero you're going to play
 CAPTAINS_MODE_RESERVE_TIME = 130          -- total bonus time that can be used throughout any selection
 
-PRE_GAME_TIME = 90.0 + AP_GAME_TIME	-- How long after people select their heroes should the horn blow and the game start?
-POST_GAME_TIME = 120.0						-- How long should we let people look at the scoreboard before closing the server automatically?
+PRE_GAME_TIME = 90.0
+if GetMapName() == "cavern" then
+	PRE_GAME_TIME = 30.0
+end
+PRE_GAME_TIME = PRE_GAME_TIME + AP_GAME_TIME	-- How long after people select their heroes should the horn blow and the game start?
+POST_GAME_TIME = 600.0						-- How long should we let people look at the scoreboard before closing the server automatically?
 AUTO_LAUNCH_DELAY = 5.0					-- How long should we wait for the host to setup the game, after all players have loaded in?
 if IsFranticMap() then
 	AUTO_LAUNCH_DELAY = 10.0
@@ -282,6 +287,16 @@ elseif GetMapName() == "imba_overthrow" then
 --	end
 
 	CustomNetTables:SetTableValue( "game_state", "victory_condition", { kills_to_win = TEAM_KILLS_TO_WIN } );
+elseif GetMapName() == "cavern" then
+	IMBA_PLAYERS_ON_GAME = 24
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_GOODGUYS] = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_BADGUYS]  = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_CUSTOM_1]  = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_CUSTOM_2]  = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_CUSTOM_3]  = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_CUSTOM_4]  = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_CUSTOM_5]  = 3
+	CUSTOM_TEAM_PLAYER_COUNT[DOTA_TEAM_CUSTOM_6]  = 3
 end
 
 -------------------------------------------------------------------------------------------------
@@ -307,27 +322,29 @@ IMBA_ALL_RANDOM_HERO_SELECTION_TIME = 5.0									-- Time we need to wait before
 
 -- Global Gold earning, values are doubled with Hyper for non-custom maps
 CUSTOM_GOLD_BONUS = {} -- 1 = Normal, 2 = Hyper
-CUSTOM_GOLD_BONUS["imba_1v1"] = 300
-CUSTOM_GOLD_BONUS["imba_overthrow"] = 300
-CUSTOM_GOLD_BONUS["imba_ranked_5v5"] = 300
-CUSTOM_GOLD_BONUS["imba_ranked_10v10"] = 300
-CUSTOM_GOLD_BONUS["imba_tournament"] = 300
-CUSTOM_GOLD_BONUS["imba_mutation_5v5"] = 300
-CUSTOM_GOLD_BONUS["imba_mutation_10v10"] = 300
-CUSTOM_GOLD_BONUS["imba_frantic_5v5"] = 300
-CUSTOM_GOLD_BONUS["imba_frantic_10v10"] = 300
+CUSTOM_GOLD_BONUS["imba_1v1"] = 250
+CUSTOM_GOLD_BONUS["imba_overthrow"] = 250
+CUSTOM_GOLD_BONUS["imba_ranked_5v5"] = 250
+CUSTOM_GOLD_BONUS["imba_ranked_10v10"] = 250
+CUSTOM_GOLD_BONUS["imba_tournament"] = 250
+CUSTOM_GOLD_BONUS["imba_mutation_5v5"] = 400
+CUSTOM_GOLD_BONUS["imba_mutation_10v10"] = 400
+CUSTOM_GOLD_BONUS["imba_frantic_5v5"] = 400
+CUSTOM_GOLD_BONUS["imba_frantic_10v10"] = 400
+CUSTOM_GOLD_BONUS["cavern"] = 200
 
 -- Global XP earning, values are doubled with Hyper for non-custom maps (right now this is not used anymore, but i'll keep it there just in case)
 CUSTOM_XP_BONUS = {} -- 1 = Normal, 2 = Hyper
-CUSTOM_XP_BONUS["imba_1v1"] = 225
-CUSTOM_XP_BONUS["imba_overthrow"] = 225
-CUSTOM_XP_BONUS["imba_ranked_5v5"] = 225
-CUSTOM_XP_BONUS["imba_ranked_10v10"] = 225
-CUSTOM_XP_BONUS["imba_tournament"] = 225
-CUSTOM_XP_BONUS["imba_mutation_5v5"] = 225
-CUSTOM_XP_BONUS["imba_mutation_10v10"] = 225
-CUSTOM_XP_BONUS["imba_frantic_5v5"] = 225
-CUSTOM_XP_BONUS["imba_frantic_10v10"] = 225
+CUSTOM_XP_BONUS["imba_1v1"] = 200
+CUSTOM_XP_BONUS["imba_overthrow"] = 200
+CUSTOM_XP_BONUS["imba_ranked_5v5"] = 200
+CUSTOM_XP_BONUS["imba_ranked_10v10"] = 200
+CUSTOM_XP_BONUS["imba_tournament"] = 200
+CUSTOM_XP_BONUS["imba_mutation_5v5"] = 200
+CUSTOM_XP_BONUS["imba_mutation_10v10"] = 200
+CUSTOM_XP_BONUS["imba_frantic_5v5"] = 200
+CUSTOM_XP_BONUS["imba_frantic_10v10"] = 200
+CUSTOM_XP_BONUS["cavern"] = 100
 
 -- Hero base level, values are doubled with Hyper for non-custom maps
 HERO_STARTING_LEVEL = {} -- 1 = Normal, 2 = Hyper
@@ -336,10 +353,11 @@ HERO_STARTING_LEVEL["imba_overthrow"] = 1
 HERO_STARTING_LEVEL["imba_ranked_5v5"] = 1
 HERO_STARTING_LEVEL["imba_ranked_10v10"] = 1
 HERO_STARTING_LEVEL["imba_tournament"] = 1
-HERO_STARTING_LEVEL["imba_mutation_5v5"] = 1
-HERO_STARTING_LEVEL["imba_mutation_10v10"] = 1
+HERO_STARTING_LEVEL["imba_mutation_5v5"] = 3
+HERO_STARTING_LEVEL["imba_mutation_10v10"] = 3
 HERO_STARTING_LEVEL["imba_frantic_5v5"] = 5
 HERO_STARTING_LEVEL["imba_frantic_10v10"] = 5
+HERO_STARTING_LEVEL["cavern"] = 1
 
 MAX_LEVEL = {}
 MAX_LEVEL["imba_1v1"] = 42
@@ -351,6 +369,7 @@ MAX_LEVEL["imba_mutation_5v5"] = 42
 MAX_LEVEL["imba_mutation_10v10"] = 42
 MAX_LEVEL["imba_frantic_5v5"] = 42
 MAX_LEVEL["imba_frantic_10v10"] = 42
+MAX_LEVEL["cavern"] = 42
 
 HERO_INITIAL_GOLD = {}
 HERO_INITIAL_GOLD["imba_1v1"] = 1200
@@ -358,10 +377,11 @@ HERO_INITIAL_GOLD["imba_overthrow"] = 1200
 HERO_INITIAL_GOLD["imba_ranked_5v5"] = 1200
 HERO_INITIAL_GOLD["imba_ranked_10v10"] = 1200
 HERO_INITIAL_GOLD["imba_tournament"] = 1200
-HERO_INITIAL_GOLD["imba_mutation_5v5"] = 1200
-HERO_INITIAL_GOLD["imba_mutation_10v10"] = 1200
+HERO_INITIAL_GOLD["imba_mutation_5v5"] = 2000
+HERO_INITIAL_GOLD["imba_mutation_10v10"] = 2000
 HERO_INITIAL_GOLD["imba_frantic_5v5"] = 4000
 HERO_INITIAL_GOLD["imba_frantic_10v10"] = 4000
+HERO_INITIAL_GOLD["cavern"] = 1200
 
 GOLD_TICK_TIME = {}
 GOLD_TICK_TIME["imba_1v1"] = 0.6
@@ -373,6 +393,7 @@ GOLD_TICK_TIME["imba_mutation_5v5"] = 0.6
 GOLD_TICK_TIME["imba_mutation_10v10"] = 0.4
 GOLD_TICK_TIME["imba_frantic_5v5"] = 0.4
 GOLD_TICK_TIME["imba_frantic_10v10"] = 0.4
+GOLD_TICK_TIME["cavern"] = 9999.0
 
 BANNED_ITEMS = {}
 BANNED_ITEMS["imba_1v1"] = {
@@ -381,14 +402,43 @@ BANNED_ITEMS["imba_1v1"] = {
 	"item_soul_ring",
 	"item_tome_of_knowledge",
 }
-BANNED_ITEMS["imba_overthrow"] = {}
-BANNED_ITEMS["imba_ranked_5v5"] = {}
-BANNED_ITEMS["imba_ranked_10v10"] = {}
-BANNED_ITEMS["imba_tournament"] = {}
-BANNED_ITEMS["imba_mutation_5v5"] = {}
-BANNED_ITEMS["imba_mutation_10v10"] = {}
-BANNED_ITEMS["imba_frantic_5v5"] = {}
-BANNED_ITEMS["imba_frantic_10v10"] = {}
+BANNED_ITEMS["imba_overthrow"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_ranked_5v5"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_ranked_10v10"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_tournament"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_mutation_5v5"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_mutation_10v10"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_frantic_5v5"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["imba_frantic_10v10"] = {
+	"item_cavern_dynamite",
+}
+BANNED_ITEMS["cavern"] = {
+	"item_imba_aegis",
+	"item_imba_bottle",
+	"item_imba_hand_of_midas",
+	"item_recipe_imba_hand_of_midas",
+	"item_imba_heart",
+	"item_helm_of_the_dominator",
+	"item_smoke_of_deceit",
+	"item_tome_of_knowledge",
+	"item_tpscroll",
+	"item_imba_blink",
+	"item_imba_blink_boots",
+}
 
 REMAINING_GOODGUYS = 0														-- Remaining players on Radiant
 REMAINING_BADGUYS = 0														-- Remaining players on Dire
@@ -484,6 +534,7 @@ for i = 26, 100 do
 end
 
 USE_MEME_SOUNDS = true														-- Should we use meme/fun sounds on abilities occasionally?
+BOTS_ENABLED = false
 
 -------------------------------------------------------------------------------------------------
 -- IMBA: Test mode variables
@@ -500,25 +551,16 @@ DISPELLABLE_DEBUFF_LIST = LoadKeyValues("scripts/npc/KV/dispellable_debuffs_list
 
 PLAYER_TEAM = {}
 
-DONATOR_STATUS = {}
-DONATOR_STATUS[1] = "IMBA Dev"
-DONATOR_STATUS[2] = "PRO DEVCUCK"
-DONATOR_STATUS[3] = "Administrator"
-DONATOR_STATUS[4] = "Ember Donator"
-DONATOR_STATUS[5] = "Golden Donator"
-DONATOR_STATUS[6] = "Donator"
-DONATOR_STATUS[7] = "Salamander Donator"
-DONATOR_STATUS[8] = "Icefrog Donator"
-
 DONATOR_COLOR = {}
 DONATOR_COLOR[1] = {160, 20, 20}
-DONATOR_COLOR[2] = {0, 204, 255}
-DONATOR_COLOR[3] = {160, 20, 20}
+DONATOR_COLOR[2] = {100, 20, 20}
+DONATOR_COLOR[3] = {0, 102, 255}
 DONATOR_COLOR[4] = {240, 50, 50}
 DONATOR_COLOR[5] = {218, 165, 32}
 DONATOR_COLOR[6] = {45, 200, 45}
 DONATOR_COLOR[7] = {47, 91, 151}
 DONATOR_COLOR[8] = {153, 51, 153}
+DONATOR_COLOR[9] = {255, 135, 42}
 
 IMBA_INVISIBLE_MODIFIERS = {
 	"modifier_imba_moonlight_shadow_invis",
@@ -562,6 +604,9 @@ RESTRICT_FOUNTAIN_UNITS = {
 	"npc_dota_tusk_frozen_sigil3",
 	"npc_dota_tusk_frozen_sigil4",
 	"imba_witch_doctor_death_ward",
+	"npc_imba_techies_proximity_mine",
+	"npc_imba_techies_proximity_mine_big_boom",
+	"npc_imba_techies_stasis_trap",
 }
 
 MORPHLING_RESTRICTED_MODIFIERS = {
@@ -598,6 +643,7 @@ IMBA_DONATOR_COMPANION["76561198021465788"] = "npc_imba_donator_companion_suther
 IMBA_DONATOR_COMPANION["76561198073163389"] = "npc_imba_donator_companion_terdic"
 IMBA_DONATOR_COMPANION["76561197970766309"] = "npc_imba_donator_companion_hamahe"
 IMBA_DONATOR_COMPANION["76561193687456266"] = "npc_imba_donator_companion_exzas"
+-- IMBA_DONATOR_COMPANION["76561198330946475"] = "npc_imba_donator_companion_deadknight"
 
 IMBA_DONATOR_STATUE = {}
 IMBA_DONATOR_STATUE["76561198015161808"] = "npc_imba_donator_statue_cookies"
@@ -612,6 +658,7 @@ IMBA_DONATOR_STATUE["76561198073163389"] = "npc_imba_donator_statue_terdic"
 IMBA_DONATOR_STATUE["76561198077187165"] = "npc_imba_donator_statue_toc"
 IMBA_DONATOR_STATUE["76561198187809623"] = "npc_imba_donator_statue_oviakin"
 IMBA_DONATOR_STATUE["76561197970766309"] = "npc_imba_donator_statue_hamahe"
+-- IMBA_DONATOR_STATUE["76561198330946475"] = "npc_imba_donator_statue_deadknight"
 
 UNIT_EQUIPMENT = {}
 UNIT_EQUIPMENT["models/heroes/crystal_maiden/crystal_maiden.vmdl"] = {

@@ -243,6 +243,7 @@ function CheckForHostPrivileges() {
 // Update the state for the transition timer periodically
 // --------------------------------------------------------------------------------------------------
 function UpdateTimer() {
+
 	var gameTime = Game.GetGameTime();
 	var transitionTime = Game.GetStateTransitionTime();
 	var mapInfo = Game.GetMapInfo();
@@ -282,7 +283,7 @@ function OnGameStateUpdated(table_name, key, data) {
 CustomNetTables.SubscribeNetTableListener("game_options", OnGameStateUpdated)
 
 function UpdateGameState() {
-	if (CustomNetTables.GetTableValue("game_options", "game_state").state == 2) {
+	if (Game.GameStateIsBefore(DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME)) {
 		$("#TeamSelectContainer").SetHasClass("invisible", false);
 	} else {
 		$("#TeamSelectContainer").SetHasClass("invisible", true);
@@ -297,13 +298,13 @@ function UpdateGameState() {
 	// -------------------------
 	// auto_team_select is used on 5v5 and 10v10
 	// -------------------------
-//	if (
-//		(Game.GetMapInfo().map_display_name == "imba_ranked_5v5") ||
-//		(Game.GetMapInfo().map_display_name == "imba_ranked_10v10")
-//	) {
-//		$.Msg("Skipping legacy team select on map");
-//		return;
-//	}
+	if (
+		(Game.GetMapInfo().map_display_name == "imba_ranked_5v5") ||
+		(Game.GetMapInfo().map_display_name == "imba_ranked_10v10")
+	) {
+		$.Msg("Skipping legacy team select on map " + Game.GetMapInfo().map_display_name + ", Imba Matchmaking enabled.");
+		return;
+	}
 		
 	var bShowSpectatorTeam = false;
 	var bAutoAssignTeams = true;
